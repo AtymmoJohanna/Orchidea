@@ -1,7 +1,13 @@
 <template>
-  <MapsVue />
+  <router-view />
 </template>
 
-<script setup>
-import MapsVue from "./components/MapsVue.vue";
+<script>
+import MapsVue from "@/components/MapsVue.vue";
+
+export default {
+  components: {
+    MapsVue,
+  },
+};
 </script>
