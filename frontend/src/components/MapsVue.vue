@@ -1,8 +1,11 @@
 <template>
-  <div>
+  <div class="map-container">
     <input v-model="address" placeholder="Entrez une adresse" />
     <button @click="geocodeAddress">Rechercher</button>
-    <div id="map" style="height: 400px;"></div>
+    <div id="map"></div>
+
+    <!-- Ajout du footer -->
+    <FooterVue />
   </div>
 </template>
 
@@ -10,8 +13,12 @@
 import { ref, onMounted } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import FooterVue from "@/components/FooterVue.vue";
 
 export default {
+  components: {
+    FooterVue, // ✅ Déclaration du footer
+  },
   setup() {
     const address = ref("");
     const map = ref(null);
@@ -62,6 +69,12 @@ export default {
 </script>
 
 <style scoped>
+.map-container {
+  position: relative;
+  padding-bottom: 60px;
+  background-color: #dcead2;/* Pour éviter que le footer cache la carte */
+}
+
 input {
   margin-bottom: 10px;
   padding: 5px;
