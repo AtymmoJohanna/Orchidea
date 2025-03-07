@@ -8,8 +8,12 @@
       <p class="text">Appuyez pour identifier</p>
 
       <div class="buttons">
-        <button class="gallery-button">📷 Galerie</button>
-        <button class="camera-button">📸</button>
+        <button class="gallery-button">
+          <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
+        </button>
+        <button class="camera-button">
+          <img src="@/assets/cam-logo.png" alt="Galerie" class="button-img" />
+        </button>
       </div>
     </div>
   </div>
@@ -46,22 +50,6 @@ export default {
   text-align: center;
 }
 
-.input-field {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.search-button {
-  padding: 10px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
 
 .image-container {
   width: 100%;
@@ -87,8 +75,7 @@ export default {
   margin-top: 20px;
 }
 
-.gallery-button,
-.camera-button {
+.gallery-button{
   font-size: 16px;
   padding: 10px 20px;
   border-radius: 50%;
@@ -98,8 +85,11 @@ export default {
 }
 
 .camera-button {
-  width: 80px;
-  height: 80px;
-  font-size: 24px;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
 }
 </style>

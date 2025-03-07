@@ -2,8 +2,8 @@
   <div class="map-container">
     <input v-model="address" placeholder="Entrez une adresse" />
     <button @click="geocodeAddress">Rechercher</button>
+    <h2>Localisation</h2>
     <div id="map"></div>
-
 
   </div>
 </template>
