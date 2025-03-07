@@ -4,8 +4,7 @@
     <button @click="geocodeAddress">Rechercher</button>
     <div id="map"></div>
 
-    <!-- Ajout du footer -->
-    <FooterVue />
+
   </div>
 </template>
 

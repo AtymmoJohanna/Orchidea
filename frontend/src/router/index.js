@@ -1,10 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import MapsVue from '@/components/MapsVue.vue';
-import CameraVue from '@/components/CameraVue.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import StatView from "@/views/StatView.vue";
+import CameraView from "@/views/CameraView.vue";
 
 const routes = [
-  { path: '/', component: MapsVue },
-  { path: '/camera', component: CameraVue },
+  { path: "/", redirect: "/stats" },
+  { path: "/stats", component: StatView },
+  { path: "/camera", component: CameraView },
 ];
 
 const router = createRouter({
