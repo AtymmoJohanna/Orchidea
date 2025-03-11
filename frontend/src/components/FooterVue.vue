@@ -38,8 +38,18 @@ const navigateTo = (path) => {
 .icon-list {
   display: flex;
   justify-content: space-around;
+  align-items: center;
   background: #008000;
   padding: 10px;
+}
+
+/* 📱 Adaptation aux écrans mobiles */
+@media (max-width: 600px) {
+  .icon-list {
+    flex-direction: row; /* Aligne horizontalement sur mobile */
+    justify-content: space-evenly;
+    padding: 8px;
+  }
 }
 
 .icon-btn {
@@ -47,13 +57,24 @@ const navigateTo = (path) => {
   border: none;
   cursor: pointer;
   padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon-img {
-  width: 30px;
-  height: 30px;
+  width: 35px; /* Taille par défaut */
+  height: 35px;
   filter: brightness(0) invert(1); /* Rend les icônes blanches sur fond vert */
   transition: transform 0.2s ease-in-out;
+}
+
+/* 📱 Réduction de la taille des icônes sur les petits écrans */
+@media (max-width: 600px) {
+  .icon-img {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 .icon-btn:hover .icon-img {

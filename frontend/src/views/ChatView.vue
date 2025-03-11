@@ -1,17 +1,18 @@
 <template>
   <div>
-    <InfoForm />
+    <h1>Chat</h1>
+    <ChatComponent />
     <FooterVue />
   </div>
 </template>
 
 <script>
-import InfoForm from "@/components/InfoForm.vue";
 import FooterVue from "@/components/FooterVue.vue";
+import ChatComponent from '@/components/ChatComponent.vue'
 
 export default {
   components: {
-    InfoForm,
+    ChatComponent,
     FooterVue,
   },
 };
