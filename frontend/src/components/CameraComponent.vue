@@ -1,30 +1,58 @@
 <template>
   <div class="camera-container">
     <div class="content">
-      <div class="image-container">
-        <img src="@/assets/img-fond.png" alt="Fleur" class="top-image" />
+      <img src="@/assets/img-fond.png" alt="Fleur" class="top-image" />
+      <!-- Affichage de l'image prise -->
+      <div class="image-container" v-if="photo">
+        <img :src="photo" alt="Captured Image" class="top-image" />
       </div>
-
-      <p class="text">Appuyez pour identifier</p>
+      <p class="text" v-else>Appuyez pour identifier</p>
 
       <div class="buttons">
+        <!-- Bouton Galerie -->
         <button class="gallery-button">
           <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
         </button>
-        <button class="camera-button">
-          <img src="@/assets/cam-logo.png" alt="Galerie" class="button-img" />
+
+        <!-- Bouton Caméra -->
+        <button class="camera-button" @click="openCamera">
+          <img src="@/assets/cam-logo.png" alt="Camera" class="button-img" />
         </button>
       </div>
+
+      <!-- Input file caché pour capturer une image -->
+      <input type="file" ref="fileInput" accept="image/*" capture="environment" @change="handleImage" hidden />
     </div>
   </div>
 </template>
 
 <script>
-import FooterVue from "@/components/FooterVue.vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router"; // Pour la redirection après la prise de photo
 
 export default {
-  components: {
-    FooterVue, // ✅ Ajout du footer pour cohérence
+  setup() {
+    const photo = ref(null);
+    const fileInput = ref(null);
+    const router = useRouter();
+
+    // Fonction pour ouvrir la caméra
+    const openCamera = () => {
+      fileInput.value.click();
+    };
+
+    // Fonction pour gérer l’image prise
+    const handleImage = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        photo.value = URL.createObjectURL(file); // Affichage immédiat de l’image
+        setTimeout(() => {
+          router.push("/formulaire"); // Rediriger vers l’interface de saisie
+        }, 1000);
+      }
+    };
+
+    return { photo, fileInput, openCamera, handleImage };
   },
 };
 </script>
@@ -32,7 +60,7 @@ export default {
 <style scoped>
 .camera-container {
   position: relative;
-  padding-bottom: 60px; /* Pour éviter que le footer ne cache les éléments */
+  padding-bottom: 60px;
   background-color: #dcead2;
   display: flex;
   flex-direction: column;
@@ -40,16 +68,6 @@ export default {
   justify-content: center;
   height: 100vh;
 }
-
-.content {
-  width: 90%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
 
 .image-container {
   width: 100%;
@@ -75,7 +93,8 @@ export default {
   margin-top: 20px;
 }
 
-.gallery-button{
+.gallery-button,
+.camera-button {
   font-size: 16px;
   padding: 10px 20px;
   border-radius: 50%;
@@ -84,12 +103,8 @@ export default {
   cursor: pointer;
 }
 
-.camera-button {
-  font-size: 16px;
-  padding: 10px 20px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #ccc;
-  cursor: pointer;
+.button-img {
+  width: 50px;
+  height: 50px;
 }
 </style>
