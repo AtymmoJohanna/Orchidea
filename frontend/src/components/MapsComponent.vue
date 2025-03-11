@@ -1,10 +1,11 @@
 <template>
   <div class="map-container">
-    <input v-model="address" placeholder="Entrez une adresse" />
-    <button @click="geocodeAddress">Rechercher</button>
+    <div class="search-bar">
+      <input v-model="address" placeholder="Entrez une adresse" />
+      <button @click="geocodeAddress">Rechercher</button>
+    </div>
     <h2>Localisation</h2>
     <div id="map"></div>
-
   </div>
 </template>
 
@@ -12,12 +13,8 @@
 import { ref, onMounted } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import FooterVue from "@/components/FooterVue.vue";
 
 export default {
-  components: {
-    FooterVue, // ✅ Déclaration du footer
-  },
   setup() {
     const address = ref("");
     const map = ref(null);
@@ -71,25 +68,65 @@ export default {
 .map-container {
   position: relative;
   padding-bottom: 60px;
-  background-color: #dcead2;/* Pour éviter que le footer cache la carte */
+  background-color: #dcead2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 15px;
+}
+
+.search-bar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  gap: 10px;
 }
 
 input {
-  margin-bottom: 10px;
-  padding: 5px;
-  width: 60%;
+  padding: 10px;
+  width: 100%;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 button {
-  margin-left: 10px;
-  padding: 5px 10px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
 }
 
+button:hover {
+  background-color: #1b5e20;
+}
+
 #map {
-  margin-top: 10px;
+  margin-top: 15px;
   width: 100%;
-  height: 400px;
+  max-width: 600px;
+  height: 300px;
+  border-radius: 10px;
   border: 1px solid #ccc;
+}
+
+/* 📱 Responsive mobile */
+@media (max-width: 600px) {
+  .map-container {
+    padding: 10px;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  #map {
+    height: 250px;
+  }
 }
 </style>
