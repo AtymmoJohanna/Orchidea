@@ -14,4 +14,12 @@ public class PhotoDTO {
     private Integer auteurId;
     private Integer specimenId;
 
+    public PhotoDTO(Integer id, String url, LocalDate datePriseVue, Integer auteurId, Integer specimenId) {
+        this.id = id;
+        this.url = url;
+        this.datePriseVue = datePriseVue;
+        this.auteurId = auteurId;
+        this.specimenId = specimenId;
+    }
+
 }
