@@ -5,63 +5,54 @@
       <button @click="geocodeAddress">Rechercher</button>
     </div>
     <h2>Localisation</h2>
-    <div id="map"></div>
+    <div id="mapcarto" class="map-container">
+    </div>
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from "vue";
+<script setup>
+import { onMounted } from "vue";
+// --- importer Leaflet et le css associé
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+// --  datas à afficher sur la carte
+const cabinetsMedical = [
+  { "nom" : "Maison de Santé Carré Gambetta", "lat" : 43.60411, "lng" : 2.23862 },
+  { "nom" : "Cabinet Médical Gaillac et Luguet", "lat" : 43.60883, "lng" : 2.23078 },
+  { "nom" : "Cabinet Médical de Lameilhé", "lat" : 43.59259, "lng" : 2.25492 },
+  { "nom" : "Cabinet Médical du Saillenc", "lat" :  43.60928, "lng" : 2.25946 }
+]
+// -- Facultatif : définir une icône personnalisée pour les centres médicaux
+const myIcon = L.icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/387/387561.png',
+  iconSize: [48, 48],
+});
 
-export default {
-  setup() {
-    const address = ref("");
-    const map = ref(null);
-    const marker = ref(null);
+// ------------  Fonction pour afficher la carte
+function afficheCarto(){
+  // Initialisation de la carte avec leaftlet
+  //   - la placer dans la div d'id 'mapcarto'
+  //   - la centrer sur Castres avec un zoom de 14
+  let mapcarto = L.map('mapcarto').setView([43.60548, 2.24167], 14); // France
 
-    const initMap = () => {
-      map.value = L.map("map").setView([48.8566, 2.3522], 12); // Paris par défaut
+  // Ajouter un fond de carte (OpenStreetMap)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(mapcarto);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
-      }).addTo(map.value);
-    };
+  // Ajouter les markers :  1 pour chaque centre médical
+  cabinetsMedical.forEach((cabinet) => {
+    L.marker([cabinet.lat, cabinet.lng], {icon: myIcon}).addTo(mapcarto)
+      .bindPopup(cabinet.nom); // Ajouter une popup au marker
+  });
 
-    const geocodeAddress = async () => {
-      if (!address.value) {
-        alert("Veuillez entrer une adresse.");
-        return;
-      }
-
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address.value)}`
-      );
-      const data = await response.json();
-
-      if (data.length > 0) {
-        const location = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-        map.value.setView(location, 12);
-
-        if (marker.value) {
-          marker.value.remove();
-        }
-
-        marker.value = L.marker(location).addTo(map.value)
-          .bindPopup(`📍 <strong>Coordonnées :</strong><br>Lat: ${data[0].lat}, Lon: ${data[0].lon}`)
-          .openPopup();
-      } else {
-        alert("Adresse introuvable");
-      }
-    };
-
-    onMounted(() => {
-      initMap();
-    });
-
-    return { address, geocodeAddress };
-  },
-};
+  // Ajouter un cercle sur la carte
+  L.circle([43.60548, 2.24167], {
+    color: 'blue', fillOpacity: 0.1, radius: 2000
+  }).addTo(mapcarto);
+}
+// -- afficher la carte à la création du composant
+onMounted(afficheCarto);
 </script>
 
 <style scoped>
@@ -129,4 +120,5 @@ button:hover {
     height: 250px;
   }
 }
+.map-container { width: 80%; height: 700px; margin: 20px;}
 </style>

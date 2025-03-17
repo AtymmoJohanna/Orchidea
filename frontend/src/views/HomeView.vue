@@ -1,9 +1,18 @@
-<script setup>
-import TheWelcome from '../components/TheWelcome.vue'
-</script>
-
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <div>
+    <InfoForm />
+    <FooterVue />
+  </div>
 </template>
+
+<script>
+import FooterVue from "@/components/FooterVue.vue";
+import homeComponent from '@/components/HomeComponent.vue'
+
+export default {
+  components: {
+    homeComponent,
+    FooterVue,
+  },
+};
+</script>

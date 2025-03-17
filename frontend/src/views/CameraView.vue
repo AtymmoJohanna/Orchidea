@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>Identification de l'image</h1>
     <CameraComponent />
     <FooterVue />
   </div>

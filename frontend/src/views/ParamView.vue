@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>Parametre</h1>
     <ParametreComponent />
     <FooterVue />
   </div>

@@ -9,6 +9,7 @@
           <span class="avatar">👤</span>
           <span class="name">{{ review.author }}</span>
           <span class="date">{{ review.date }}</span>
+          <span class="heure">{{review.heure}}</span>
         </div>
         <div class="review-content">
           {{ review.message }}
@@ -45,6 +46,7 @@ export default {
         {
           author: "Antonio Fauci",
           date: "10 fév.",
+          heure:"20:45",
           message: "Génial, l'application est facile à utiliser",
         },
       ],
@@ -58,6 +60,7 @@ export default {
       const newReview = {
         author: "Antonio Fauci",
         date: new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }),
+        heure: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}),
         message: this.message,
       };
       this.reviews.push(newReview);
@@ -124,7 +127,7 @@ export default {
 }
 
 .review-content {
-  background: #f5f5f5;
+  background: #ebd3d3;
   padding: 10px;
   border-radius: 5px;
   margin-top: 5px;

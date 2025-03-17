@@ -4,9 +4,10 @@ import CameraView from "@/views/CameraView.vue";
 import ParamView from '@/views/ParamView.vue';
 import FormView from '@/views/FormView.vue'
 import ChatView from '@/views/ChatView.vue'
+import homeView from '@/views/HomeView.vue'
 
 const routes = [
-  { path: "/", redirect: "/stats" },
+  { path: "/", component: homeView },
   { path: "/stats", component: StatView },
   { path: "/camera", component: CameraView },
   { path: "/param", component: ParamView },
