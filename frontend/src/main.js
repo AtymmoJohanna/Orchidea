@@ -1,14 +1,12 @@
-import './assets/main.css'
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+
+// main.js ou main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+
+// Importer Vuetify
 import vuetify from './plugins/vuetify';
-import App from './App.vue'
+import 'vuetify/styles'; // Importer les styles de Vuetify
 import router from './router'
 
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
-
-app.mount('#app')
+createApp(App).use(vuetify).use(router).mount('#app');

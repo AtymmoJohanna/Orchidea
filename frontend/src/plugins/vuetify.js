@@ -1,4 +1,4 @@
 import { createVuetify } from 'vuetify';
-import 'vuetify/styles'; // Import des styles
+import 'vuetify/styles';
 
 export default createVuetify();
