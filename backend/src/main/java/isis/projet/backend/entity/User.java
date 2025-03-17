@@ -7,6 +7,8 @@ import java.util.List;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
+
 
 import lombok.*;
 

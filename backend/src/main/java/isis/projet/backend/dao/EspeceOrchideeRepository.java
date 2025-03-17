@@ -1,3 +1,4 @@
+package isis.projet.backend.dao;
 import isis.projet.backend.entity.EspeceOrchidee;
 import org.springframework.data.jpa.repository.JpaRepository;
 

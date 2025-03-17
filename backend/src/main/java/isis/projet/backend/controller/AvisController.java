@@ -22,12 +22,6 @@ public class AvisController {
         return ResponseEntity.ok(createdAvis);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAvis(@PathVariable Integer id) {
-        avisService.deleteAvis(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping
     public ResponseEntity<List<AvisDTO>> getAllAvis() {
         List<AvisDTO> avisList = avisService.getAllAvis();

@@ -33,15 +33,4 @@ public class EspeceOrchideeController {
         return ResponseEntity.ok(especes);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EspeceOrchideeDTO> updateEspeceOrchidee(@PathVariable Integer id, @RequestBody EspeceOrchideeDTO especeOrchideeDTO) {
-        EspeceOrchideeDTO updatedEspeceOrchidee = especeOrchideeService.updateEspeceOrchidee(id, especeOrchideeDTO);
-        return ResponseEntity.ok(updatedEspeceOrchidee);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEspeceOrchidee(@PathVariable Integer id) {
-        especeOrchideeService.deleteEspeceOrchidee(id);
-        return ResponseEntity.noContent().build();
-    }
 }
