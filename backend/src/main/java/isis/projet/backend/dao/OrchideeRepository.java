@@ -19,7 +19,7 @@ public interface OrchideeRepository extends JpaRepository<Orchidee, Integer> {
      * @param couleur la couleur recherchée
      * @return la liste des orchidees ayant cette couleur
      */
-    List<Orchidee> findByCouleur(List<Couleur> couleur);
+    List<Orchidee> findByCouleurIn(List<Couleur> couleur);
 
     /**
      * Trouve les orchidees en fonction de leur espèce
@@ -40,6 +40,6 @@ public interface OrchideeRepository extends JpaRepository<Orchidee, Integer> {
      * @param auteur l'utilisateur (auteur) des orchidees
      * @return la liste des orchidees créées par cet auteur
      */
-    List<Orchidee> findByAuteur(User auteur);
+    List<Orchidee> findByAuteur(Utilisateur auteur);
 
 }

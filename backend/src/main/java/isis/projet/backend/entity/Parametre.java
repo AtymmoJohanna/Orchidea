@@ -1,11 +1,6 @@
 package isis.projet.backend.entity;
 
-import java.time.LocalDate;
-import java.util.LinkedList;
-import java.util.List;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 
 import lombok.*;
 
@@ -25,20 +20,20 @@ public class Parametre {
 
     @NonNull
     @Column()
-    private boolean camera;
+    private Boolean camera;
 
     @NonNull
     @Column()
-    private boolean photos;
+    private Boolean photos;
 
     @NonNull
     @Column()
-    private boolean localisation;
+    private Boolean localisation;
 
 
     @OneToOne
     @NonNull
-    private User user;
+    private Utilisateur utilisateur;
 
 }
 

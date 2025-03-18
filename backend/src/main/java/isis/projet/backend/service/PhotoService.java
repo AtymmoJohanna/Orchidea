@@ -2,11 +2,11 @@ package isis.projet.backend.service;
 
 import isis.projet.backend.dao.OrchideeRepository;
 import isis.projet.backend.dao.PhotoRepository;
-import isis.projet.backend.dao.UserRepository;
+import isis.projet.backend.dao.UtilisateurRepository;
 import isis.projet.backend.dto.PhotoDTO;
 import isis.projet.backend.entity.Photo;
 import isis.projet.backend.entity.Orchidee;
-import isis.projet.backend.entity.User;
+import isis.projet.backend.entity.Utilisateur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class PhotoService {
     private PhotoRepository photoRepository;
 
     @Autowired
-    private UserRepository userRepository;  // Assurez-vous que ce repository existe
+    private UtilisateurRepository utilisateurRepository;  // Assurez-vous que ce repository existe
 
     @Autowired
     private OrchideeRepository orchideeRepository;  // Assurez-vous que ce repository existe
@@ -41,7 +41,7 @@ public class PhotoService {
 
     // Méthode pour convertir une Photo en PhotoDTO
     private PhotoDTO convertToDTO(Photo photo) {
-        User auteur = photo.getAuteur();
+        Utilisateur auteur = photo.getAuteur();
         Orchidee specimen = photo.getSpecimen();
 
         // Conversion en DTO avec les informations nécessaires
@@ -55,7 +55,7 @@ public class PhotoService {
     }
 
     public PhotoDTO createPhoto(PhotoDTO photoDTO) {
-        User auteur = userRepository.findById(photoDTO.getAuteurId())
+        Utilisateur auteur = utilisateurRepository.findById(photoDTO.getAuteurId())
                 .orElseThrow(() -> new RuntimeException("Auteur non trouvé"));
 
         Orchidee specimen = orchideeRepository.findById(photoDTO.getSpecimenId())
@@ -75,7 +75,7 @@ public class PhotoService {
         photo.setUrl(photoDTO.getUrl());
         photo.setDatePriseVue(photoDTO.getDatePriseVue());
 
-        User auteur = userRepository.findById(photoDTO.getAuteurId())
+        Utilisateur auteur = utilisateurRepository.findById(photoDTO.getAuteurId())
                 .orElseThrow(() -> new RuntimeException("Auteur non trouvé"));
         photo.setAuteur(auteur);
 

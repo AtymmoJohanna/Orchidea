@@ -1,6 +1,5 @@
 package isis.projet.backend.entity;
 
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ import lombok.*;
 @RequiredArgsConstructor
 @ToString
 
-public class User {
+public class Utilisateur {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +46,7 @@ public class User {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "emetteur")
     private List<Avis> avis = new LinkedList<>();
 
-    @OneToOne
+    @OneToOne(mappedBy = "utilisateur")
     @NonNull
     private Parametre parametre;
 

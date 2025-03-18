@@ -1,8 +1,6 @@
 package isis.projet.backend.entity;
 
 import java.time.LocalDate;
-import java.util.LinkedList;
-import java.util.List;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -37,7 +35,7 @@ public class Avis {
 
     @ManyToOne(optional = false)
     @NonNull
-    private User emetteur ;
+    private Utilisateur emetteur ;
 
 }
 
