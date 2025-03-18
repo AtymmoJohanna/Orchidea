@@ -1,7 +1,6 @@
 package isis.projet.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -73,7 +72,7 @@ public class Orchidee {
 
     @ManyToOne(optional = false)
     @NonNull
-    private User auteur ;
+    private Utilisateur auteur ;
 
 
 }

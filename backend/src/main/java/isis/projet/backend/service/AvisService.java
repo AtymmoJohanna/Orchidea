@@ -2,9 +2,9 @@ package isis.projet.backend.service;
 
 import isis.projet.backend.dto.AvisDTO;
 import isis.projet.backend.entity.Avis;
-import isis.projet.backend.entity.User;
+import isis.projet.backend.entity.Utilisateur;
 import isis.projet.backend.dao.AvisRepository;
-import isis.projet.backend.dao.UserRepository;
+import isis.projet.backend.dao.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 public class AvisService {
 
     private final AvisRepository avisRepository;
-    private final UserRepository userRepository;
+    private final UtilisateurRepository utilisateurRepository;
 
     // Créer un avis
     @Transactional
     public AvisDTO createAvis(AvisDTO avisDTO) {
         // Chercher l'utilisateur par ID
-        User emetteur = userRepository.findById(avisDTO.getEmetteurId()).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        Utilisateur emetteur = utilisateurRepository.findById(avisDTO.getEmetteurId()).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         // Créer l'entité Avis à partir du DTO
         Avis avis = new Avis(avisDTO.getCommentaire(), emetteur);
