@@ -1,12 +1,13 @@
 package isis.projet.backend.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class PhotoDTO {
+public class PhotoDTO implements Serializable {
 
     private Integer id;
     private String url;
