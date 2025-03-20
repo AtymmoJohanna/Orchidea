@@ -1,24 +1,30 @@
 <template>
   <div class="camera-container">
     <div class="content">
-      <img src="@/assets/img-fond.png" alt="Fleur" class="top-image" />
-      <!-- Affichage de l'image prise -->
-      <div class="image-container" v-if="photo">
-        <img :src="photo" alt="Captured Image" class="top-image" />
+      <!--<img src="@/assets/img-fond.png" alt="Fleur" class="top-image" />-->
+
+      <!-- Galerie des images prises -->
+      <div class="image-gallery" v-if="photos.length">
+        <div v-for="(photo, index) in photos" :key="index" class="image-container">
+          <img :src="photo" alt="Captured Image" class="top-image" />
+          <button class="delete-button" @click="removePhoto(index)">❌</button>
+        </div>
       </div>
-      <p class="text" v-else>Appuyez pour identifier</p>
+
+      <p class="text" v-if="!photos.length">Appuyez pour identifier</p>
 
       <div class="buttons">
-        <!-- Bouton Galerie -->
         <button class="gallery-button">
           <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
         </button>
 
-        <!-- Bouton Caméra -->
         <button class="camera-button" @click="openCamera">
           <img src="@/assets/cam-logo.png" alt="Camera" class="button-img" />
         </button>
       </div>
+
+      <!-- Bouton pour valider et continuer -->
+      <button v-if="photos.length" class="validate-button" @click="goToForm">Valider</button>
 
       <!-- Input file caché pour capturer une image -->
       <input type="file" ref="fileInput" accept="image/*" capture="environment" @change="handleImage" hidden />
@@ -28,31 +34,35 @@
 
 <script>
 import { ref } from "vue";
-import { useRouter } from "vue-router"; // Pour la redirection après la prise de photo
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
-    const photo = ref(null);
+    const photos = ref([]); // Stocke plusieurs photos
     const fileInput = ref(null);
     const router = useRouter();
 
-    // Fonction pour ouvrir la caméra
     const openCamera = () => {
       fileInput.value.click();
     };
 
-    // Fonction pour gérer l’image prise
     const handleImage = (event) => {
       const file = event.target.files[0];
       if (file) {
-        photo.value = URL.createObjectURL(file); // Affichage immédiat de l’image
-        setTimeout(() => {
-          router.push("/formulaire"); // Rediriger vers l’interface de saisie
-        }, 1000);
+        const imageUrl = URL.createObjectURL(file);
+        photos.value.push(imageUrl); // Ajouter la photo au tableau
       }
     };
 
-    return { photo, fileInput, openCamera, handleImage };
+    const removePhoto = (index) => {
+      photos.value.splice(index, 1); // Supprimer une photo spécifique
+    };
+
+    const goToForm = () => {
+      router.push("/formulaire"); // Rediriger vers le formulaire
+    };
+
+    return { photos, fileInput, openCamera, handleImage, removePhoto, goToForm };
   },
 };
 </script>
@@ -69,15 +79,24 @@ export default {
   height: 100vh;
 }
 
-.image-container {
-  width: 100%;
-  text-align: center;
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
   margin-top: 20px;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 100px;
 }
 
 .top-image {
   width: 100%;
-  max-height: 200px;
+  height: 100%;
   object-fit: cover;
   border-radius: 10px;
 }
@@ -96,7 +115,7 @@ export default {
 .gallery-button,
 .camera-button {
   font-size: 16px;
-  padding: 10px 20px;
+  padding: 10px;
   border-radius: 50%;
   background: white;
   border: 1px solid #ccc;
@@ -106,5 +125,33 @@ export default {
 .button-img {
   width: 50px;
   height: 50px;
+}
+
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.validate-button {
+  margin-top: 20px;
+  background: green;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
 }
 </style>
