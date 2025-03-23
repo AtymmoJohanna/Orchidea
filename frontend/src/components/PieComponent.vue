@@ -21,9 +21,9 @@ const options = {
 </script>
 <template>
   <div class="pie-container">
-  <div>
-    <apexchart width="500" :options="options" :series="series"></apexchart>
-  </div>
+    <div>
+      <apexchart width="350" :options="options" :series="series"></apexchart>
+    </div>
   </div>
 </template>
 <style>

@@ -4,13 +4,13 @@ import apexchart from "vue3-apexcharts";
 const series = [
   {
     name: "Ventes",
-    data: [ { x: "Jan", y: 10 }, { x: "Fév", y: 20 },{ x: "Mar", y: 15 },
+    data: [{ x: "Jan", y: 10 }, { x: "Fév", y: 20 }, { x: "Mar", y: 15 },
       { x: "Avr", y: 25 }, { x: "Mai", y: 30 }, { x: "Juin", y: 40 }
     ]
   },
   {
     name: "Achats",
-    data: [ { x: "Jan", y: 60 }, { x: "Fév", y: 20 },{ x: "Mar", y: 30 },
+    data: [{ x: "Jan", y: 60 }, { x: "Fév", y: 20 }, { x: "Mar", y: 30 },
       { x: "Avr", y: 10 }, { x: "Mai", y: 50 }, { x: "Juin", y: 10 }
     ]
   }
@@ -18,7 +18,7 @@ const series = [
 // -- les options du graphique
 const options = {
   chart: {
-    type : "line", // type de graphique
+    type: "line", // type de graphique
   },
   stroke: {
     curve: 'smooth', // type de ligne
@@ -30,11 +30,12 @@ const options = {
 </script>
 
 <template>
- <div class="stat-container">
-  <div>
-    <apexchart width="500" :options="options" :series="series"></apexchart>
+  <div class="stat-container">
+    <div>
+      <apexchart width="350" :options="options" :series="series"></apexchart>
+    </div>
   </div>
- </div>>
+  >
 </template>
 <style>
 .stat-container {

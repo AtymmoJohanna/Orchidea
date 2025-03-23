@@ -1,129 +1,81 @@
 <template>
-  <div class="camera-container">
+
     <div class="content">
       <img src="@/assets/img-fond.png" alt="Fleur" class="top-image" />
 
-      <!-- Affichage de l'image prise -->
-      <div class="image-container" v-if="photo">
-        <img :src="photo" alt="Captured Image" class="captured-image" />
-        <p class="location" v-if="location">
-          📍 {{ location.latitude }}, {{ location.longitude }}
-        </p>
+      <!-- Galerie des images prises -->
+      <div class="image-gallery" v-if="photos.length">
+        <div v-for="(photo, index) in photos" :key="index" class="image-container">
+          <img :src="photo" alt="Captured Image" class="top-image" />
+          <button class="delete-button" @click="removePhoto(index)">❌</button>
+        </div>
       </div>
-      <p class="text" v-else>Appuyez pour identifier</p>
+
+      <p class="text" v-if="!photos.length">Appuyez pour identifier</p>
 
       <div class="buttons">
-        <!-- Bouton Galerie -->
-        <button class="gallery-button" @click="openGallery">
+        <button class="gallery-button">
           <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
         </button>
 
-        <!-- Bouton Caméra -->
         <button class="camera-button" @click="openCamera">
           <img src="@/assets/cam-logo.png" alt="Camera" class="button-img" />
         </button>
       </div>
 
-      <!-- Input file caché pour capturer une image -->
-      <input
-        type="file"
-        ref="fileInput"
-        accept="image/*"
-        capture="environment"
-        @change="handleImage"
-        hidden
-      />
+      <!-- Bouton pour valider et continuer -->
+      <button v-if="photos.length" class="validate-button" @click="goToForm">Valider</button>
 
-      <!-- Input file caché pour sélectionner une image depuis la galerie -->
-      <input
-        type="file"
-        ref="galleryInput"
-        accept="image/*"
-        @change="handleImage"
-        hidden
-      />
+      <!-- Input file caché pour capturer une image -->
+      <input type="file" ref="fileInput" accept="image/*" capture="environment" @change="handleImage" hidden />
     </div>
-  </div>
+
 </template>
 
 <script>
-import { ref, onUnmounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
   setup() {
-    const photo = ref(null);
+    const photos = ref([]); // Stocke plusieurs photos
     const fileInput = ref(null);
-    const galleryInput = ref(null);
-    const location = ref(null);
     const router = useRouter();
 
-    // Fonction pour ouvrir la caméra
     const openCamera = () => {
-      getLocation();
       fileInput.value.click();
     };
 
-    // Fonction pour sélectionner une image depuis la galerie
-    const openGallery = () => {
-      getLocation();
-      galleryInput.value.click();
-    };
-
-    // Fonction pour gérer l’image prise ou sélectionnée
     const handleImage = (event) => {
       const file = event.target.files[0];
       if (file) {
-        const imageURL = URL.createObjectURL(file);
-        photo.value = imageURL;
-
-        setTimeout(() => {
-          router.push("/formulaire");
-        }, 1000);
+        const imageUrl = URL.createObjectURL(file);
+        photos.value.push(imageUrl); // Ajouter la photo au tableau
       }
     };
 
-    // Fonction pour récupérer la localisation GPS
-    const getLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            location.value = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            };
-          },
-          (error) => {
-            console.error("Erreur de localisation:", error);
-          }
-        );
-      } else {
-        console.error("La géolocalisation n'est pas supportée par ce navigateur.");
-      }
+    const removePhoto = (index) => {
+      photos.value.splice(index, 1); // Supprimer une photo spécifique
     };
 
-    // Nettoyer l’URL pour éviter les fuites de mémoire
-    onUnmounted(() => {
-      if (photo.value) {
-        URL.revokeObjectURL(photo.value);
-      }
-    });
+    const goToForm = () => {
+      router.push("/formulaire"); // Rediriger vers le formulaire
+    };
 
-    return { photo, fileInput, galleryInput, location, openCamera, openGallery, handleImage };
+    return { photos, fileInput, openCamera, handleImage, removePhoto, goToForm };
   },
 };
 </script>
 
 <style scoped>
-.camera-container {
-  position: relative;
-  padding-bottom: 60px;
-  background-color: #dcead2;
+
+
+.image-gallery {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
   justify-content: center;
-  height: 100vh;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .image-container {
@@ -138,30 +90,21 @@ export default {
   max-height: 150px;
   object-fit: cover;
   border-radius: 10px;
+  margin-top: 3vh; /* Add margin-top of 3vh */
 }
-
-.captured-image {
-  width: 100%;
-  max-width: 300px;
-  max-height: 300px;
-  border-radius: 10px;
-}
-
 .text {
-  font-size: 16px;
-  margin: 10px 0;
-}
-
-.location {
-  font-size: 14px;
-  color: #555;
-  margin-top: 10px;
+  font-size: 3.5vh;
+  margin: 5vh 0;
+  text-align: center; /* Center the text horizontally */
+  font-weight: bold;
 }
 
 .buttons {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
+  width: 80vw; /* Set the width to 80vw */
+  margin: 2vh auto 0; /* Center the grid horizontally and add margin-top of 2vh */
   gap: 20px;
-  margin-top: 20px;
 }
 
 .gallery-button,
@@ -171,15 +114,51 @@ export default {
   background: white;
   border: 1px solid #ccc;
   cursor: pointer;
-  width: 60px;
-  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+
 .button-img {
-  width: 40px;
-  height: 40px;
+  width: 6vh;
+  height: 6vh;
 }
+.camera-button {
+  width: 14vh; /* Make the camera button larger */
+  height: 14vh; /* Make the camera button larger */
+}
+.camera-img {
+  width: 10vh; /* Make the camera image larger */
+  height: 10vh; /* Make the camera image larger */
+}
+
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.validate-button {
+  background-color: #2E7D32;
+  color: #fff;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  width: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
 </style>

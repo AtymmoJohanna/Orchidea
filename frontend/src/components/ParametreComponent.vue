@@ -17,13 +17,18 @@
 
     <section class="app-info">
       <h2>Version</h2>
-      <div>{{ version }}</div>
-      <div class="point-icon">
-        <img src="@/assets/icons/points.png" alt="Point icon" />
+      <div class="version-info">
+        <div class="point-icon">
+          <img src="@/assets/icons/points.png" alt="Point icon" />
+        </div>
+        <div class="text">{{ version }}</div>
       </div>
-      <div>{{ appName }}</div>
-      <div class="logo-icon">
-        <img src="@/assets/icons/logo.png" alt="Logo icon" />
+
+      <div class="version-info">
+        <div class="logo-icon">
+          <img src="@/assets/icons/logo.png" alt="Logo icon" />
+        </div>
+        <div class="text">{{ appName }}</div>
       </div>
     </section>
 
@@ -99,10 +104,32 @@ export default {
   margin-left: 10px;
 }
 
-.app-info .point-icon,
-.app-info .logo-icon {
-  margin-top: 10px;
-  text-align: center;
+.version-info {
+  display: grid;
+  grid-template-columns: 20% 1px 80%; /* First column takes 20%, 1px gap, second column takes 80% */
+  align-items: center;
+  gap: 1px;
+  justify-content: center; /* Align items to the left */
+}
+
+.point-icon,
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.point-icon img {
+  width: 2vh; /* Set width to 2vh */
+  height: 4vh; /* Set height to 4vh */
+}
+
+.text {
+  font-size: 2vh;
+  margin: 2vh 0;
+  text-align: left; /* Align text to the left */
+  font-weight: bold;
 }
 
 .app-info img,
@@ -164,8 +191,8 @@ export default {
 
   .app-info img,
   .support a {
-    width: 50px;
-    height: 50px;
+    width: 1vh;
+    height: 3vh;
   }
 }
 </style>

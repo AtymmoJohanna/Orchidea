@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <ChatComponent />
+  <div class="chat-view-container">
+    <ChatComponent class="chat-component"/>
     <FooterVue />
   </div>
 </template>
@@ -16,3 +16,19 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.chat-view-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #dcead2; /* Set background color */
+  position: relative;
+}
+
+.chat-component {
+  flex: 1; /* Make CameraComponent take all available space */
+}
+
+
+</style>

@@ -2,19 +2,17 @@
   <div class="container info-container">
     <div class="card">
       <h2 class="title">Plus d'informations !</h2>
-      <form @submit.prevent="submitForm">
+      <form @submit.prevent="soumettreFormulaire">
         <div class="expansion-panels">
           <!-- Nom de l'orchidée -->
           <details class="expansion-panel">
             <summary>Nom de l'orchidée</summary>
             <div class="expansion-content">
-              <label>
-                Nom de l'orchidée
-                <select v-model="orchidName" required>
+              <label>Nom de l'orchidée</label>
+                <select v-model="userFormData.especeOrchidee" required>
                   <option value="" disabled>Choisissez une orchidée</option>
-                  <option v-for="name in orchidNames" :key="name" :value="name">{{ name }}</option>
+                  <option v-for="name in data.especesOrchidee" :key="name" :value="name">{{ name }}</option>
                 </select>
-              </label>
             </div>
           </details>
 
@@ -24,9 +22,9 @@
             <div class="expansion-content">
               <label>
                 État d’inflorescence
-                <select v-model="influenceState" required>
+                <select v-model="userFormData.etatInflorescence" required>
                   <option value="" disabled>Choisissez un état</option>
-                  <option v-for="state in influenceStates" :key="state" :value="state">{{ state }}</option>
+                  <option v-for="etat in data.etatsInflorescence" :key="etat" :value="etat">{{ etat }}</option>
                 </select>
               </label>
             </div>
@@ -38,20 +36,24 @@
             <div class="expansion-content">
               <label>
                 Nombre d’individus
-                <input v-model="individualCount" type="number" min="0" required />
+                <!--<input v-model="data.nombresIndividus" type="number" min="0" required /> -->
+                <select v-model="userFormData.nombreIndividus" required>
+                  <option value="" disabled>Nombre d'individus</option>
+                  <option v-for="nbre in data.nombresIndividus" :key="nbre" :value="nbre">{{ nbre }}</option>
+                </select>
               </label>
             </div>
           </details>
 
-          <!-- État général de la plante -->
+          <!-- Variabilité taxon -->
           <details class="expansion-panel">
             <summary>État</summary>
             <div class="expansion-content">
               <label>
-                État général de la plante
-                <select v-model="plantState" required>
-                  <option value="" disabled>Choisissez l'état</option>
-                  <option v-for="state in plantStates" :key="state" :value="state">{{ state }}</option>
+                Variabilité taxon
+                <select v-model="userFormData.varTaxon" required>
+                  <option value="" disabled>Variabilité taxon</option>
+                  <option v-for="etat in data.varTaxon" :key="etat" :value="etat">{{ etat }}</option>
                 </select>
               </label>
             </div>
@@ -63,9 +65,9 @@
             <div class="expansion-content">
               <label>
                 Couleur dominante
-                <select v-model="color">
-                  <option value="" disabled>Choisissez une couleur</option>
-                  <option v-for="col in colors" :key="col" :value="col">{{ col }}</option>
+                <select v-model="userFormData.couleur" required>
+                  <option value="" disabled>Choisissez les couleurs</option>
+                  <option v-for="col in data.couleurs" :key="col" :value="col">{{ col }}</option>
                 </select>
               </label>
             </div>
@@ -77,9 +79,9 @@
             <div class="expansion-content">
               <label>
                 Motif pétale
-                <select v-model="pattern">
+                <select v-model="userFormData.motif" required>
                   <option value="" disabled>Choisissez un motif</option>
-                  <option v-for="pat in patterns" :key="pat" :value="pat">{{ pat }}</option>
+                  <option v-for="pat in data.motifs" :key="pat" :value="pat">{{ pat }}</option>
                 </select>
               </label>
             </div>
@@ -91,9 +93,9 @@
             <div class="expansion-content">
               <label>
                 Forme florale
-                <select v-model="shape">
+                <select v-model="userFormData.forme" required>
                   <option value="" disabled>Choisissez une forme</option>
-                  <option v-for="sh in shapes" :key="sh" :value="sh">{{ sh }}</option>
+                  <option v-for="sh in data.formes" :key="sh" :value="sh">{{ sh }}</option>
                 </select>
               </label>
             </div>
@@ -105,63 +107,88 @@
             <div class="expansion-content">
               <label>
                 Notes d'observation
-                <textarea v-model="comment" rows="3"></textarea>
+                <textarea v-model="userFormData.commentaire" rows="3"></textarea>
               </label>
             </div>
           </details>
         </div>
 
-        <button type="submit" :disabled="!formIsValid">Enregistrer</button>
+        <button type="submit">Enregistrer</button>
       </form>
+
+      <!-- Messages de statut -->
+      <div v-if="data.messageSucces" class="success-message">{{ data.messageSucces }}</div>
+      <div v-if="data.messageErreur" class="error-message">{{ data.messageErreur }}</div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      orchidName: '',
-      influenceState: '',
-      individualCount: '',
-      plantState: '',
-      color: '',
-      pattern: '',
-      shape: '',
-      comment: '',
-      orchidNames: ['Orchis militaris', 'Ophrys apifera', 'Cypripedium calceolus'],
-      influenceStates: ['Bouton', 'Floraison', 'Fanée'],
-      plantStates: ['Vigoureuse', 'Stressée', 'Malade', 'Morte'],
-      colors: ['Blanc', 'Rose', 'Pourpre', 'Jaune', 'Vert', 'Bicolore'],
-      patterns: ['Uni', 'Rayé', 'Tacheté', 'Dégradé'],
-      shapes: ['Étoilé', 'En capuchon', 'En épi', 'En grappe']
-    };
-  },
-  computed: {
-    formIsValid() {
-      return this.orchidName && this.influenceState && this.individualCount && this.plantState;
-    }
-  },
-  methods: {
-    submitForm() {
-      const observationData = {
-        orchid: this.orchidName,
-        inflorescence: this.influenceState,
-        count: Number(this.individualCount),
-        state: this.plantState,
-        characteristics: {
-          color: this.color,
-          pattern: this.pattern,
-          shape: this.shape
-        },
-        notes: this.comment
-      };
+<script setup>
+import { onMounted, reactive } from "vue";
+import axios from "axios";
+// Importer la fonction doAjaxRequest qui gère les erreurs d'API
+import doAjaxRequest from "@/util/util.js"
 
-      console.log('Données validées :', observationData);
-      // Placez ici votre logique d’envoi (par ex. axios.post)
-    }
+// données saisies par l'utilisateur
+const userFormData = reactive({
+  especeOrchidee: '', // Nom de l'orchidée
+  etatInflorescence: '', // État d’inflorescence
+  nombreIndividus: '', // Nombre d’individus
+  varTaxon: '', // Variabilité taxon
+  couleur: '', // Couleur dominante
+  motif: '', // Motif pétale
+  forme: '', // Forme florale
+  commentaire: '' // Commentaire
+});
+
+// Données recuperées du back
+const data = reactive({
+  especesOrchidee: [],
+  etatsInflorescence: [],
+  nombresIndividus: [],
+  varTaxon: [],
+  couleurs: [],
+  motifs: [],
+  formes: [],
+  messageSucces: '',
+  messageErreur: ''
+});
+
+// Fonction pour récupérer les données des enums
+const getEnumData = async () => {
+  try {
+    // Remplace l'URL par ton API backend pour chaque `enum`
+    const [especes, etatsInflorescence, nbreIndividus, varTaxon, couleurs, motifs, formes] = await Promise.all([
+      axios.get("/api/especeOrchidees"),
+      axios.get('/api/enums/etats-inflorescence'),
+      axios.get('/api/enums/nbre-individus'),
+      axios.get('/api/enums/variabilites-taxons'),
+      axios.get('/api/enums/couleurs'),
+      axios.get('/api/enums/motifs'),
+      axios.get('/api/enums/formes')
+    ]);
+
+    // Remplir les données dans le modèle réactif
+    data.especesOrchidee = especes.data._embedded.especeOrchidees.map(e => e.nomScientifique);
+    console.log(data.especesOrchidee);
+    data.etatsInflorescence = etatsInflorescence.data;
+    data.nombresIndividus = nbreIndividus.data;
+    data.varTaxon = varTaxon.data;
+    data.couleurs = couleurs.data;
+    data.motifs = motifs.data;
+    data.formes = formes.data;
+
+  } catch (error) {
+    console.error('Erreur lors de la récupération des enums:', error);
+    data.messageErreur = 'Impossible de charger les options. Veuillez réessayer plus tard.';
   }
 };
+
+// Utiliser onMounted pour charger les enums au chargement du composant
+onMounted(() => {
+  getEnumData();
+});
+
 </script>
 
 <style scoped>

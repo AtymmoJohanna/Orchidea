@@ -179,7 +179,7 @@ button {
   padding: 0.75rem;
   border: none;
   border-radius: 4px;
-  width: 100%;
+  width: 90%;
   font-size: 1rem;
   cursor: pointer;
 }
