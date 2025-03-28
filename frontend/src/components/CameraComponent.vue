@@ -49,8 +49,11 @@ export default {
     const handleImage = (event) => {
       const file = event.target.files[0];
       if (file) {
-        const imageUrl = URL.createObjectURL(file);
-        photos.value.push(imageUrl); // Ajouter la photo au tableau
+        const reader = new FileReader();
+        reader.readAsDataURL(file); // Convertit l'image en Base64
+        reader.onload = () => {
+          photos.value.push(reader.result); // Stocker l'image en Base64
+        };
       }
     };
 
@@ -58,14 +61,43 @@ export default {
       photos.value.splice(index, 1); // Supprimer une photo spécifique
     };
 
-    const goToForm = () => {
-      router.push("/formulaire"); // Rediriger vers le formulaire
+    const savePhotoToDB = async (photoBase64) => {
+      try {
+        const response = await fetch("http://localhost:8080/api/photos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url: photoBase64, // Envoi de la photo en Base64
+            datePriseVue: new Date().toISOString().split("T")[0], // Date du jour
+            auteurId: 1, // Remplace par l'ID réel de l'utilisateur
+            specimenId: 1, // Remplace par l'ID réel de l'orchidée
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de l'enregistrement de la photo");
+        }
+
+        console.log("Photo enregistrée avec succès !");
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    };
+
+    const goToForm = async () => {
+      if (photos.value.length > 0) {
+        await savePhotoToDB(photos.value[0]); // Enregistrer la première photo
+        router.push("/formulaire"); // Redirection après enregistrement
+      }
     };
 
     return { photos, fileInput, openCamera, handleImage, removePhoto, goToForm };
   },
 };
 </script>
+
 
 <style scoped>
 

@@ -113,7 +113,7 @@
           </details>
         </div>
 
-        <button type="submit">Enregistrer</button>
+        <button @click="navigateTo('/')">Enregistrer</button>
       </form>
 
       <!-- Messages de statut -->
@@ -124,8 +124,13 @@
 </template>
 
 <script setup>
+const router = useRouter();
+const navigateTo = (path) => {
+  router.push(path);
+};
 import { onMounted, reactive } from "vue";
 import axios from "axios";
+import { useRouter } from 'vue-router';
 // Importer la fonction doAjaxRequest qui gère les erreurs d'API
 import doAjaxRequest from "@/util/util.js"
 
@@ -153,6 +158,17 @@ const data = reactive({
   messageSucces: '',
   messageErreur: ''
 });
+const soumettreFormulaire = async () => {
+  try {
+    await axios.post("https://monserveur.com/api/enregistrer-photo", userFormData);
+    alert("Photo enregistrée avec succès !");
+
+    // Rafraîchir les photos après l'ajout
+    fetchPhotos();
+  } catch (error) {
+    alert("Erreur lors de l’enregistrement.");
+  }
+};
 
 // Fonction pour récupérer les données des enums
 const getEnumData = async () => {

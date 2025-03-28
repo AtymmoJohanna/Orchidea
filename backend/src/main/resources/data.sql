@@ -7,3 +7,9 @@ INSERT INTO Country(id, code, name) VALUES
 -- Attention, cette commande n'est pas standard SQL
 -- ici la syntaxe pour H2
 ALTER TABLE Country ALTER COLUMN id RESTART WITH 4;
+
+INSERT INTO espece_orchidee (CODE, NOM_SCIENTIFIQUE) VALUES
+    (default, 'Ophrys'), -- code 1
+    (default, 'Orchis'), -- code 2
+    (default, 'Spiranthes'); -- code 3
+

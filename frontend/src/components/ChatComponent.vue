@@ -37,46 +37,56 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
       message: "", // Stocke l'avis en cours d'écriture
       showConfirmation: false, // Affiche le message de confirmation
-      reviews: [
-        {
-          author: "Antonio Fauci",
-          date: "10 fév.",
-          heure:"20:45",
-          message: "Génial, l'application est facile à utiliser",
-        },
-      ],
+      reviews: [],
+      utilisateurId: 1, // Remplace par l'ID réel de l'utilisateur connecté
     };
   },
   methods: {
-    submitMessage() {
+    async submitMessage() {
       if (!this.message.trim()) return;
 
-      // Ajouter un nouvel avis avec la date actuelle
-      const newReview = {
-        author: "Antonio Fauci",
-        date: new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }),
-        heure: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}),
-        message: this.message,
-      };
-      this.reviews.push(newReview);
+      try {
+        const avisDTO = {
+          commentaire: this.message,
+          emetteurId: this.utilisateurId,
+        };
 
-      // Réinitialiser le champ message
-      this.message = "";
-      this.showConfirmation = true;
+        const response = await axios.post("http://localhost:8989/api/avis", avisDTO);
 
-      // Masquer le message de confirmation après 2 secondes
-      setTimeout(() => {
-        this.showConfirmation = false;
-      }, 2000);
-    },
+        console.log("Réponse du serveur :", response.data); // 🔍 Vérifier l'avis enregistré
+
+        if (response.status === 200) {
+          const newReview = {
+            author: "Utilisateur",
+            date: new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }),
+            heure: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+            message: this.message,
+          };
+          this.reviews.push(newReview);
+
+          this.message = "";
+          this.showConfirmation = true;
+
+          setTimeout(() => {
+            this.showConfirmation = false;
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'enregistrement de l'avis :", error);
+      }
+    }
+
   },
 };
 </script>
+
 
 <style scoped>
 .chat-container {

@@ -22,7 +22,7 @@ const navigateTo = (path) => {
     <button @click="navigateTo('/param')" class="icon-btn">
       <img :src="paramIcon" alt="Param Icon" class="icon-img" />
     </button>
-    <button @click="navigateTo('/')" class="icon-btn">
+    <button @click="navigateTo('/home')" class="icon-btn">
       <img :src="homeIcon" alt="Home Icon" class="icon-img" />
     </button>
     <button @click="navigateTo('/com')" class="icon-btn">

@@ -9,6 +9,7 @@
 <script>
 import MapsVue from "@/components/HomeComponent.vue";
 
+
 export default {
   components: {
     MapsVue,

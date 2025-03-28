@@ -15,48 +15,43 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
 @ToString
 
 public class Utilisateur {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE) // la clé est auto-générée par la BD, On ne veut pas de "setter"
+    @Setter(AccessLevel.NONE) // Empêche la modification de l'ID
     private Integer id;
 
     @NonNull
     @Email
-    @Size(min = 5, max = 255)  // min=5 pour éviter "a@b" qui est invalide
+    @Size(min = 5, max = 255)
     @Column(nullable = false, unique = true, length = 255)
     private String mail;
 
     @NonNull
-    @Size(min = 8, max = 255) // min=8 pour éviter les mots de passe trop courts
-    @Column(nullable = false, unique = true, length = 255)
+    @Size(min = 8, max = 255)
+    @Column(nullable = false, length = 255)
     private String pwd;
 
     @NonNull
     @Size(min = 1, max = 255)
-    @Column(nullable = false, unique=true, length = 255)
+    @Column(nullable = false, length = 255)
     private String nom;
 
-
-    @ToString.Exclude
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "emetteur")
-    private List<Avis> avis = new LinkedList<>();
-
-    @OneToOne(mappedBy = "utilisateur")
     @NonNull
-    private Parametre parametre;
+    @Size(min = 1, max = 255)
+    @Column(nullable = false, length = 255)
+    private String prenom;  // ✅ Ajout du prénom
 
-    @ToString.Exclude
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "auteur")
-    private List<Orchidee> specimens = new LinkedList<>();
-
-    @ToString.Exclude
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "auteur")
-    private List<Photo> photos = new LinkedList<>();
+    // 🔽 Ajout du constructeur explicite pour éviter l'erreur
+    public Utilisateur(String mail, String pwd, String nom, String prenom) {
+        this.mail = mail;
+        this.pwd = pwd;
+        this.nom = nom;
+        this.prenom = prenom;
+    }
 
 
 }

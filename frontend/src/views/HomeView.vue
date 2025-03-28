@@ -1,6 +1,5 @@
 <template>
   <div class="home-view-container">
-
     <FooterVue />
   </div>
 </template>

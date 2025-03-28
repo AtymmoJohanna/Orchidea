@@ -43,19 +43,26 @@
 export default {
   data() {
     return {
-      userName: 'Antonio Fauci',
-      profileImage: '', // Changez le chemin vers votre image
+      userName: "",  // Initialisation vide
+      profileImage: "",
       permissions: [
-        { name: 'localisation', label: 'Localisation', granted: false },
-        { name: 'camera', label: 'Caméra', granted: false },
-        { name: 'photos', label: 'Photos', granted: false },
+        { name: "localisation", label: "Localisation", granted: false },
+        { name: "camera", label: "Caméra", granted: false },
+        { name: "photos", label: "Photos", granted: false },
       ],
-      version: '1.0.0',
-      appName: 'Les orchidées 2025',
-      supportText: 'Évaluation',
+      version: "1.0.0",
+      appName: "Les orchidées 2025",
+      supportText: "Évaluation",
     };
   },
+  created() {
+    const user = JSON.parse(localStorage.getItem("user")); // Récupérer l'utilisateur
+    if (user) {
+      this.userName = user.nom; // Assure-toi que `nom` est la bonne propriété de ton objet utilisateur
+    }
+  },
 };
+
 </script>
 
 <style scoped>
