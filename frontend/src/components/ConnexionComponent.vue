@@ -13,9 +13,11 @@
     <button type="submit" :disabled="!email.trim() || !password.trim()">Se connecter</button>
 
   </form>
+
 </template>
 
 <script>
+
 import axios from "axios";
 
 import { useRouter } from "vue-router";

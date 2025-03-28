@@ -2,6 +2,7 @@
   <div class="inscrit-view-container">
     <ConnexionComponent class="inscrit-component" />
     <FooterVue />
+
   </div>
 </template>
 

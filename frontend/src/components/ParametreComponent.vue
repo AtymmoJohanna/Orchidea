@@ -8,6 +8,7 @@
     </header>
 
     <section class="permissions">
+
       <h2>Autorisations</h2>
       <div v-for="permission in permissions" :key="permission.name" class="permission-item">
         <input type="checkbox" v-model="permission.granted" />

@@ -3,6 +3,7 @@
     <InscritComponent class="inscrit-component" />
     <FooterVue />
   </div>
+
 </template>
 
 <script>
