@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrchideeService {
     private final OrchideeRepository orchideeRepository;
-    private final EspeceOrchideeRepository especeOrchideeRepository;
 
     @Transactional
     public Orchidee createOrchidee(Orchidee orchidee) {

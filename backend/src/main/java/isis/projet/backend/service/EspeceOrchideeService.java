@@ -5,6 +5,8 @@ import isis.projet.backend.entity.EspeceOrchidee;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EspeceOrchideeService {
@@ -15,4 +17,13 @@ public class EspeceOrchideeService {
     public EspeceOrchidee createEspeceOrchidee(EspeceOrchidee especeOrchidee) {
         return especeOrchideeRepository.save(especeOrchidee);
     }
+
+    public EspeceOrchidee getEspeceByNomScientifique(String nomScientifique) {
+        return especeOrchideeRepository.findByNomScientifique(nomScientifique);
+    }
+
+    public List<EspeceOrchidee> getAllEspecesOrchidee() {
+        return especeOrchideeRepository.findAll();
+    }
+
 }

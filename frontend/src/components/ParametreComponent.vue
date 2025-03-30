@@ -1,10 +1,8 @@
 <template>
   <div class="profile-container">
     <header class="profile-header">
-      <h1>{{ userName }}</h1>
-      <div class="profile-image">
-        <img :src="profileImage" alt="Profile Picture" />
-      </div>
+      <h1> {{ userName }}</h1>
+
     </header>
 
     <section class="permissions">
@@ -86,11 +84,6 @@ export default {
   margin-bottom: 10px;
 }
 
-.profile-image img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-}
 
 .permissions,
 .app-info,

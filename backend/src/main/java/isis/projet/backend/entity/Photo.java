@@ -21,8 +21,8 @@ public class Photo {
     private Integer id;
 
     @NonNull
-    @Size(min = 1, max = 255)
-    @Column(nullable = false, unique=true, length = 255)
+    @Lob
+    @Column(nullable = false, unique=true, columnDefinition = "TEXT")
     private String url;
 
     @Basic(optional = false)

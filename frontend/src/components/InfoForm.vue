@@ -113,7 +113,7 @@
           </details>
         </div>
 
-        <button @click="navigateTo('/')">Enregistrer</button>
+        <button @click="soumettreFormulaire">Enregistrer</button>
       </form>
 
       <!-- Messages de statut -->
@@ -124,15 +124,11 @@
 </template>
 
 <script setup>
-const router = useRouter();
-const navigateTo = (path) => {
-  router.push(path);
-};
+
 import { onMounted, reactive } from "vue";
 import axios from "axios";
-import { useRouter } from 'vue-router';
-// Importer la fonction doAjaxRequest qui gère les erreurs d'API
-import doAjaxRequest from "@/util/util.js"
+import { useRoute } from 'vue-router'
+const route = useRoute();
 
 // données saisies par l'utilisateur
 const userFormData = reactive({
@@ -158,22 +154,57 @@ const data = reactive({
   messageSucces: '',
   messageErreur: ''
 });
+
+const photo = route.params.photo ? JSON.parse(route.params.photo) : null;
 const soumettreFormulaire = async () => {
   try {
-    await axios.post("https://monserveur.com/api/enregistrer-photo", userFormData);
-    alert("Photo enregistrée avec succès !");
+
+    // Créer un objet Orchidee à partir des données de l'utilisateur
+    const newOrchidee = {
+      commentaire: userFormData.commentaire,
+      etat: userFormData.etatInflorescence,
+      couleur: userFormData.couleur ? [userFormData.couleur] : [],
+      varTaxon: userFormData.varTaxon,
+      nbreIndividu: userFormData.nombreIndividus,
+      motif: userFormData.motif ? [userFormData.motif] : [],
+      forme: userFormData.forme,
+      espece: userFormData.especeOrchidee,
+      auteur: photo.auteur,
+      latitude: 1,
+      longitude: 1,
+    };
+
+
+    // Enregistrer l'objet Orchidee dans la base de données
+    const orchideeResponse = await axios.post("/api/orchidees", newOrchidee);
+
+    // Après avoir obtenu l'Orchidee enregistré, créer l'objet photo
+    const photoData = {
+      url: photo.url,
+      auteur: photo.auteur,
+      specimen: orchideeResponse.data, // Associer l'orchidée enregistrée à la photo
+    };
+
+    await axios.post("/api/photos", photoData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     // Rafraîchir les photos après l'ajout
     fetchPhotos();
+    alert("Photo enregistrée avec succès !");
+    router.push("/formulaire"); // Navigate to the InfoForm component
   } catch (error) {
-    alert("Erreur lors de l’enregistrement.");
+    console.error("Erreur lors de l'enregistrement de la photo :", error);
+    alert("Une erreur est survenue lors de l'enregistrement de la photo.");
   }
 };
 
 // Fonction pour récupérer les données des enums
 const getEnumData = async () => {
   try {
-    // Remplace l'URL par ton API backend pour chaque `enum`
+    // Remplace l'URL par ton API backend pour chaque enum
     const [especes, etatsInflorescence, nbreIndividus, varTaxon, couleurs, motifs, formes] = await Promise.all([
       axios.get("/api/especeOrchidees"),
       axios.get('/api/enums/etats-inflorescence'),
@@ -185,8 +216,12 @@ const getEnumData = async () => {
     ]);
 
     // Remplir les données dans le modèle réactif
-    data.especesOrchidee = especes.data._embedded.especeOrchidees.map(e => e.nomScientifique);
-    console.log(data.especesOrchidee);
+    //data.especesOrchidee = especes.data.map(e => e.nomScientifique);
+    data.especesOrchidee = especes.data.map(espece => ({
+      code: espece.code,
+      nomScientifique: espece.nomScientifique
+    }));
+    console.log(especes.data);
     data.etatsInflorescence = etatsInflorescence.data;
     data.nombresIndividus = nbreIndividus.data;
     data.varTaxon = varTaxon.data;

@@ -13,7 +13,7 @@ const routes = [
   { path: "/stats", component: StatView },
   { path: "/camera", component: CameraView },
   { path: "/param", component: ParamView },
-  { path: "/formulaire", component: FormView },
+  { path: "/formulaire/:photo?", name: "formulaire", component: FormView, props: true },
   { path: "/com", component: ChatView },
   {path: "/", component: HomeView },
   { path: "/connexion", component: ConexView },

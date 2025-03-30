@@ -51,9 +51,9 @@ export default {
   try {
     await axios.post("http://localhost:8989/api/utilisateurs/inscription", {
       nom: nom.value,
-      prenom: prenom.value,  // Assure-toi qu'il est bien dans l'entité Java
-      mail: email.value,     // 🔄 Converti `email` en `mail`
-      pwd: password.value    // 🔄 Converti `password` en `pwd`
+      prenom: prenom.value,
+      mail: email.value,
+      pwd: password.value
     });
 
     message.value = "Compte créé avec succès ! Redirection...";
