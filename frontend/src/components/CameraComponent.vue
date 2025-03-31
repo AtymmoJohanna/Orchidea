@@ -4,15 +4,20 @@
 
     <!-- Galerie des images prises -->
     <div class="image-gallery" v-if="photos.length">
-      <div v-for="(photo, index) in photos" :key="index" class="image-container">
-        <img :src="photo" alt="Captured Photo" class="captured-photo" />
-        <button class="delete-button" @click="removePhoto(index)">X</button>
-      </div>
-    </div>
+         <div v-for="(photo, index) in photos" :key="index" class="image-container">
+           <img :src="photo" alt="Captured Image" class="top-image" />
+           <button class="delete-button" @click="removePhoto(index)">❌</button>
+         </div>
+       </div>
 
     <p class="text" v-if="!photos.length">Appuyez pour identifier</p>
 
     <div class="buttons">
+
+      <button class="gallery-button">
+           <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
+         </button>
+
       <button class="camera-button" @click="openCamera">
         <img src="@/assets/cam-logo.png" alt="Camera" class="camera-img" />
       </button>
@@ -83,69 +88,48 @@ export default {
 
 
 <style scoped>
-/* Mise en forme pour le paragraphe .text */
-.text {
-  font-size: 2.5vh; /* Taille du texte ajustée en fonction de la hauteur de l'écran */
-  text-align: center; /* Centrer le texte horizontalement */
-  font-weight: bold; /* Mettre le texte en gras */
-  color: #333; /* Couleur sombre pour le texte */
-  margin: 20px 0; /* Marge autour du texte */
-  line-height: 1.5; /* Espacement entre les lignes pour améliorer la lisibilité */
-}
-/* Image d'entête : Ne prend que la hauteur nécessaire */
-.top-image {
-  width: 100%;
-  height: auto; /* Garde la hauteur proportionnelle */
-  object-fit: cover;
-  margin: 0; /* Pas de marge au-dessus */
-  max-height: 300px; /* Ajuste la hauteur maximale si nécessaire */
-}
 
-/* Galerie des images : Centrer les images sélectionnées horizontalement */
+
 .image-gallery {
   display: flex;
-  justify-content: center; /* Centrer horizontalement */
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   margin-top: 20px;
-  flex-wrap: wrap; /* Permet de passer à la ligne suivante si nécessaire */
-  overflow-x: auto; /* Défilement horizontal si trop d'images */
 }
 
-/* Conteneur des images : Largeur et hauteur adaptées */
 .image-container {
-  position: relative;
-  width: 120px; /* Largeur fixe pour les images */
-  height: 120px; /* Hauteur fixe pour les images */
+  position: relative; /* Make this container the reference for positioning */
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 3vh; 
 }
 
-/* Styles pour la croix de suppression sur les images */
-.delete-button {
-   position: absolute;
-   top: 5px;
-   right: 5px;
-   background: red;
-   color: white;
-   border: none;
-   cursor: pointer;
-   font-size: 14px;
-   border-radius: 50%;
-   width: 20px;
-   height: 20px;
-   display: flex;
-   align-items: center;
-   justify-content: center;
- }
+.top-image {
+  width: 100%;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 3vh; /* Add margin-top of 3vh */
+}
+.text {
+  font-size: 3.5vh;
+  margin: 5vh 0;
+  text-align: center; /* Center the text horizontally */
+  font-weight: bold;
+}
 
-
-/* Boutons : Centrer les boutons de caméra et galerie, taille ajustée */
 .buttons {
-  display: flex;
-  justify-content: center; /* Centrer horizontalement */
-  gap: 20px;
-  margin-top: 20px;
+  display: grid;
+   grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
+   /* Set the width to 80vw */
+    width: 80vw; /* Set the width to 80vw */
+   margin: 5vh auto 0; /* Center the grid horizontally and add margin-top of 2vh */
+   gap: 20px;
 }
 
-.gallery-button,
+
 .camera-button {
   padding: 10px;
   border-radius: 50%;
@@ -155,19 +139,66 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 14vh; /* Make the camera button larger */
+  height: 14vh;
 }
 
-/* Pour le bouton Valider : Centré et taille ajustée */
+.gallery-button {
+  padding: 10px;
+  
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10vh; /* Make the gallery button larger */
+  height: 10vh;
+}
+
+
+.button-img {
+  width: 6vh;
+  height: 6vh;
+}
+
+.camera-img {
+  width: 10vh; /* Make the camera image larger */
+  height: 10vh; /* Make the camera image larger */
+}
+
+.delete-button {
+  position: absolute; /* Position relative to the .image-container */
+  top: 5px; /* Distance from the top of the image */
+  right: 5px; /* Distance from the right of the image */
+  background: white; /* Set the background color to white */
+  color: red; /* Set the text color to red */
+  border: 2px solid red; /* Add a red border */
+  cursor: pointer;
+  font-size: 18px; /* Increase the font size */
+  border-radius: 50%; /* Make the button circular */
+  width: 4vh; /* Increase the width */
+  height: 4vh; /* Increase the height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+}
+
+
 .validate-button {
   background-color: #2E7D32;
   color: #fff;
   padding: 0.75rem;
   border: none;
   border-radius: 4px;
-  width: auto; /* Taille ajustée à son contenu */
+  width: 50%; /* Set the width to 50% */
   font-size: 1rem;
   cursor: pointer;
-  margin: 20px auto;
-  display: block;
+  margin: 5vh auto 0; /* Add margin-top of 5vh and center horizontally */
+  display: block; /* Ensure the button is treated as a block-level element */
+  text-align: center; /* Center the text inside the button */
 }
+
 </style>

@@ -128,6 +128,7 @@
 import { onMounted, reactive } from "vue";
 import axios from "axios";
 import { useRoute } from 'vue-router'
+import router from '@/router/index.js'
 const route = useRoute();
 
 // données saisies par l'utilisateur
@@ -156,7 +157,10 @@ const data = reactive({
 });
 
 const photo = route.params.photo ? JSON.parse(route.params.photo) : null;
+let isSubmitting = false;
 const soumettreFormulaire = async () => {
+  if (isSubmitting) return; // Empêcher une deuxième soumission
+  isSubmitting = true;
   try {
 
     // Créer un objet Orchidee à partir des données de l'utilisateur
@@ -176,7 +180,7 @@ const soumettreFormulaire = async () => {
 
 
     // Enregistrer l'objet Orchidee dans la base de données
-    const orchideeResponse = await axios.post("/api/orchidees", newOrchidee);
+    const orchideeResponse = await axios.post("/api/orchidees", newOrchidee,{ withCredentials: false });
 
     // Après avoir obtenu l'Orchidee enregistré, créer l'objet photo
     const photoData = {
@@ -191,13 +195,15 @@ const soumettreFormulaire = async () => {
       },
     });
 
-    // Rafraîchir les photos après l'ajout
-    fetchPhotos();
+    router.replace({ params: { photo: null } });
+
     alert("Photo enregistrée avec succès !");
-    router.push("/formulaire"); // Navigate to the InfoForm component
+    router.push("home");
   } catch (error) {
     console.error("Erreur lors de l'enregistrement de la photo :", error);
     alert("Une erreur est survenue lors de l'enregistrement de la photo.");
+  }finally {
+    isSubmitting = false; // Réinitialiser après la requête
   }
 };
 
