@@ -9,10 +9,10 @@
             <summary>Nom de l'orchidée</summary>
             <div class="expansion-content">
               <label>Nom de l'orchidée</label>
-                <select v-model="userFormData.especeOrchidee" required>
-                  <option value="" disabled>Choisissez une orchidée</option>
-                  <option v-for="name in data.especesOrchidee" :key="name" :value="name">{{ name }}</option>
-                </select>
+              <select v-model="userFormData.especeOrchidee" required>
+                <option value="" disabled>Choisissez une orchidée</option>
+                <option v-for="name in data.especesOrchidee" :key="name" :value="name">{{ name }}</option>
+              </select>
             </div>
           </details>
 
@@ -156,14 +156,62 @@ const data = reactive({
   messageErreur: ''
 });
 
-const photo = route.params.photo ? JSON.parse(route.params.photo) : null;
+// 🟢 Récupérer la photo depuis localStorage
+const storedPhoto = localStorage.getItem("photo");
+const photo = storedPhoto ? JSON.parse(storedPhoto) : null;
+
 let isSubmitting = false;
+
+const getLocation = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        // Vérifiez que les coordonnées sont correctement définies
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+        // Mettre à jour userFormData
+        userFormData.latitude = latitude;
+        userFormData.longitude = longitude;
+
+        console.log("userFormData après mise à jour:", userFormData);
+      },
+      (error) => {
+        console.error("Erreur de géolocalisation :", error);
+        alert("Impossible de récupérer votre position.");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      }
+    );
+  } else {
+    alert("La géolocalisation n'est pas supportée par votre navigateur.");
+  }
+};
+
+
 const soumettreFormulaire = async () => {
   if (isSubmitting) return; // Empêcher une deuxième soumission
   isSubmitting = true;
-  try {
 
-    // Créer un objet Orchidee à partir des données de l'utilisateur
+  try {
+    // Récupérer la position GPS avant de soumettre
+    await new Promise((resolve, reject) => {
+      getLocation(); // Appeler la fonction pour obtenir les coordonnées
+      setTimeout(() => {  // Utiliser un délai pour attendre la mise à jour de `userFormData`
+        if (userFormData.latitude && userFormData.longitude) {
+          resolve();
+        } else {
+          reject(new Error('Les coordonnées n\'ont pas été récupérées.'));
+        }
+      }, 3000); // Attendre 3 secondes pour récupérer les coordonnées
+    });
+
+    // Créer un objet Orchidee avec les nouvelles coordonnées
     const newOrchidee = {
       commentaire: userFormData.commentaire,
       etat: userFormData.etatInflorescence,
@@ -174,13 +222,12 @@ const soumettreFormulaire = async () => {
       forme: userFormData.forme,
       espece: userFormData.especeOrchidee,
       auteur: photo.auteur,
-      latitude: 1,
-      longitude: 1,
+      latitude: userFormData.latitude, // Utiliser la latitude récupérée
+      longitude: userFormData.longitude, // Utiliser la longitude récupérée
     };
 
-
     // Enregistrer l'objet Orchidee dans la base de données
-    const orchideeResponse = await axios.post("/api/orchidees", newOrchidee,{ withCredentials: false });
+    const orchideeResponse = await axios.post("/api/orchidees", newOrchidee, { withCredentials: false});
 
     // Après avoir obtenu l'Orchidee enregistré, créer l'objet photo
     const photoData = {
@@ -189,23 +236,20 @@ const soumettreFormulaire = async () => {
       specimen: orchideeResponse.data, // Associer l'orchidée enregistrée à la photo
     };
 
-    await axios.post("/api/photos", photoData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await axios.post("/api/photos", photoData);
 
-    router.replace({ params: { photo: null } });
+    localStorage.removeItem("photo");
 
     alert("Photo enregistrée avec succès !");
-    router.push("home");
+    router.push("/");
   } catch (error) {
     console.error("Erreur lors de l'enregistrement de la photo :", error);
     alert("Une erreur est survenue lors de l'enregistrement de la photo.");
-  }finally {
+  } finally {
     isSubmitting = false; // Réinitialiser après la requête
   }
 };
+
 
 // Fonction pour récupérer les données des enums
 const getEnumData = async () => {
@@ -244,6 +288,8 @@ const getEnumData = async () => {
 // Utiliser onMounted pour charger les enums au chargement du composant
 onMounted(() => {
   getEnumData();
+  const storedPhoto = localStorage.getItem("photo");
+  photo.value = storedPhoto ? JSON.parse(storedPhoto) : null;
 });
 
 </script>
@@ -262,7 +308,7 @@ onMounted(() => {
   background: #fff;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 600px;
 }

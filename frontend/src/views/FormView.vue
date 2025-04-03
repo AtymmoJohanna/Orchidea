@@ -2,6 +2,8 @@
   <div>
     <InfoForm />
     <FooterVue />
+    <router-view :key="$route.fullPath"></router-view>
+
   </div>
 </template>
 

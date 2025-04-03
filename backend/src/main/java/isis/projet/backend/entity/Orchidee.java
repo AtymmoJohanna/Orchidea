@@ -28,12 +28,12 @@ public class Orchidee {
     @Basic(optional = false)
     @Column(nullable = false)
     @NonNull
-    private Integer latitude;
+    private float latitude;
 
     @Basic(optional = false)
     @Column(nullable = false)
     @NonNull
-    private Integer longitude;
+    private float longitude;
 
     @Basic(optional = false)
     @Column(nullable = false)

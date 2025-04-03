@@ -4,19 +4,18 @@
 
     <!-- Galerie des images prises -->
     <div class="image-gallery" v-if="photos.length">
-         <div v-for="(photo, index) in photos" :key="index" class="image-container">
-           <img :src="photo" alt="Captured Image" class="top-image" />
-           <button class="delete-button" @click="removePhoto(index)">❌</button>
-         </div>
-       </div>
+      <div v-for="(photo, index) in photos" :key="index" class="image-container">
+        <img :src="photo" alt="Captured Image" class="top-image" />
+        <button class="delete-button" @click="removePhoto(index)">❌</button>
+      </div>
+    </div>
 
     <p class="text" v-if="!photos.length">Appuyez pour identifier</p>
 
     <div class="buttons">
-
       <button class="gallery-button">
-           <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
-         </button>
+        <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
+      </button>
 
       <button class="camera-button" @click="openCamera">
         <img src="@/assets/cam-logo.png" alt="Camera" class="camera-img" />
@@ -26,36 +25,55 @@
     <!-- Bouton pour valider et continuer -->
     <button v-if="photos.length" class="validate-button" @click="savePhoto">Valider</button>
 
-    <!-- Input file caché pour capturer une image -->
-    <input type="file" ref="fileInput" accept="image/*" capture="environment" @change="handleImage" hidden />
+    <!-- Zone pour afficher le flux vidéo de la caméra -->
+    <div v-if="isCameraOpen">
+      <video class="video" ref="video" width="320" height="240" autoplay></video>
+      <button class="validate-button" @click="capturePhoto">Prendre une photo</button>
+    </div>
+
+    <canvas ref="canvas" width="320" height="340" style="display: none;"></canvas>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
-import axios from "axios";
 import { useRouter } from "vue-router";
 
 export default {
   setup() {
     const user = JSON.parse(localStorage.getItem("user"));
     const photos = ref([]); // Store captured photos
-    const fileInput = ref(null);
+    const isCameraOpen = ref(false); // Track if the camera is open
     const router = useRouter();
 
     const openCamera = () => {
-      fileInput.value.click(); // Trigger the file input
+      isCameraOpen.value = true;
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          const videoElement = document.querySelector("video");
+          videoElement.srcObject = stream;
+        })
+        .catch((error) => {
+          console.error("Erreur d'accès à la caméra: ", error);
+        });
     };
 
-    const handleImage = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          photos.value.push(e.target.result); // Add the photo to the gallery
-        };
-        reader.readAsDataURL(file);
-      }
+    const capturePhoto = () => {
+      const canvas = document.querySelector("canvas");
+      const video = document.querySelector("video");
+      const context = canvas.getContext("2d");
+
+      // Capture the current frame from the video stream and draw it to the canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Convert the image from the canvas to a data URL
+      const imageDataUrl = canvas.toDataURL('image/png');
+
+      // Add the captured photo to the gallery
+      photos.value.push(imageDataUrl);
+
+      // Close the camera after taking a photo
+      isCameraOpen.value = false;
     };
 
     const removePhoto = (index) => {
@@ -67,12 +85,15 @@ export default {
 
       try {
         const photoData = {
-          url: photos.value[0],
+          url: photos.value[0], // Première photo capturée
           auteur: user,
         };
 
-        // Pass photo data in the route params
-        router.push({ name: "formulaire", params: { photo: JSON.stringify(photoData) } });
+        // Stocker la photo dans localStorage pour la récupérer dans le formulaire
+        localStorage.setItem("photo", JSON.stringify(photoData));
+
+        // Rediriger vers le formulaire sans passer par `route.params`
+        router.push({ name: "formulaire" });
 
       } catch (error) {
         console.error("Erreur lors de l'enregistrement de la photo :", error);
@@ -81,15 +102,14 @@ export default {
     };
 
 
-    return { photos, fileInput, openCamera, handleImage, removePhoto, savePhoto };
+
+
+    return { photos, openCamera, capturePhoto, removePhoto, savePhoto, isCameraOpen };
   },
 };
 </script>
 
-
 <style scoped>
-
-
 .image-gallery {
   display: flex;
   flex-wrap: wrap;
@@ -99,11 +119,11 @@ export default {
 }
 
 .image-container {
-  position: relative; /* Make this container the reference for positioning */
+  position: relative;
   max-height: 150px;
   object-fit: cover;
   border-radius: 10px;
-  margin-top: 3vh; 
+  margin-top: 3vh;
 }
 
 .top-image {
@@ -111,24 +131,29 @@ export default {
   max-height: 150px;
   object-fit: cover;
   border-radius: 10px;
-  margin-top: 3vh; /* Add margin-top of 3vh */
+  margin-top: 3vh;
 }
 .text {
   font-size: 3.5vh;
   margin: 5vh 0;
-  text-align: center; /* Center the text horizontally */
+  text-align: center;
   font-weight: bold;
 }
 
 .buttons {
   display: grid;
-   grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
-   /* Set the width to 80vw */
-    width: 80vw; /* Set the width to 80vw */
-   margin: 5vh auto 0; /* Center the grid horizontally and add margin-top of 2vh */
-   gap: 20px;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 80vw;
+  margin: 5vh auto 0;
+  gap: 20px;
 }
-
+.video{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 80vw;
+  margin: 5vh auto 0;
+  gap: 20px;
+}
 
 .camera-button {
   padding: 10px;
@@ -139,13 +164,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 14vh; /* Make the camera button larger */
+  width: 14vh;
   height: 14vh;
 }
 
 .gallery-button {
   padding: 10px;
-  
   border-radius: 50%;
   background: white;
   border: 1px solid #ccc;
@@ -153,10 +177,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 10vh; /* Make the gallery button larger */
+  width: 10vh;
   height: 10vh;
 }
-
 
 .button-img {
   width: 6vh;
@@ -164,28 +187,27 @@ export default {
 }
 
 .camera-img {
-  width: 10vh; /* Make the camera image larger */
-  height: 10vh; /* Make the camera image larger */
+  width: 10vh;
+  height: 10vh;
 }
 
 .delete-button {
-  position: absolute; /* Position relative to the .image-container */
-  top: 5px; /* Distance from the top of the image */
-  right: 5px; /* Distance from the right of the image */
-  background: white; /* Set the background color to white */
-  color: red; /* Set the text color to red */
-  border: 2px solid red; /* Add a red border */
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: white;
+  color: red;
+  border: 2px solid red;
   cursor: pointer;
-  font-size: 18px; /* Increase the font size */
-  border-radius: 50%; /* Make the button circular */
-  width: 4vh; /* Increase the width */
-  height: 4vh; /* Increase the height */
+  font-size: 18px;
+  border-radius: 50%;
+  width: 4vh;
+  height: 4vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-
 
 .validate-button {
   background-color: #2E7D32;
@@ -193,12 +215,11 @@ export default {
   padding: 0.75rem;
   border: none;
   border-radius: 4px;
-  width: 50%; /* Set the width to 50% */
+  width: 50%;
   font-size: 1rem;
   cursor: pointer;
-  margin: 5vh auto 0; /* Add margin-top of 5vh and center horizontally */
-  display: block; /* Ensure the button is treated as a block-level element */
-  text-align: center; /* Center the text inside the button */
+  margin: 5vh auto 0;
+  display: block;
+  text-align: center;
 }
-
 </style>

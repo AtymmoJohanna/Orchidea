@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/orchidees")
@@ -18,5 +20,9 @@ public class OrchideeController {
     @PostMapping
     public Orchidee enregistrerOrchidee(@RequestBody Orchidee Orchidee) {
         return orchideeService.createOrchidee(Orchidee);
+    }
+    @GetMapping
+    public List<Orchidee> getAllOrchidees() {
+        return orchideeService.getAll();
     }
 }

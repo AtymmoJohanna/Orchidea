@@ -2,53 +2,61 @@
   <div class="gallery-container">
     <h2>Galerie d'Images</h2>
     <div v-if="photos.length === 0">Aucune image disponible.</div>
-    <div v-else class="photo-grid">
-      <div v-for="(urls, orchidName) in groupedPhotos" :key="orchidName" class="photo-group">
-        <h3>{{ orchidName }}</h3>
-        <div class="photo-list">
-          <img v-for="url in urls" :key="url" :src="url" class="photo-item" />
-        </div>
+    <div v-else>
+      <div v-for="(photo, index) in photos" :key="index" class="photo-item-container">
+        <p><strong>URL de l'image:</strong> {{ photo.url }}</p>
+        <p><strong>Auteur:</strong> {{ photo.auteur }}</p>
+          <!-- Ajouter la description si nécessaire -->
       </div>
+    </div>
+
+    <div v-if="orchidee">
+      <h3>Informations sur l'Orchidée</h3>
+      <p><strong>Nom:</strong> {{ orchidee.nom }}</p>  <!-- Assurez-vous que les données d'orchidée existent -->
+      <p><strong>Latitude:</strong> {{ orchidee.latitude }}</p>
+      <p><strong>Longitude:</strong> {{ orchidee.longitude }}</p>
     </div>
   </div>
 </template>
 
+
+
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 
 export default {
   setup() {
-    const photos = ref([]);
+    const photos = ref([]);  // Tableau pour stocker les photos et leurs informations
+    const orchidee = ref(null);  // Stocker les données de l'orchidée
 
-    // Fonction pour récupérer les photos depuis l’API
-    const fetchPhotos = async () => {
+    // Fonction pour récupérer les données des photos et de l'orchidée
+    const fetchPhotosAndOrchidee = async () => {
       try {
-        const response = await axios.get("https://monserveur.com/api/photos"); // Remplace par l'URL de ton API
-        photos.value = response.data;
+        // Récupérer les photos depuis l'API
+        const responsePhotos = await axios.get("/api/photos");
+        photos.value = responsePhotos.data;
+
+        // Récupérer les informations sur l'orchidée
+        const responseOrchidee = await axios.get("api/orchidees");
+        orchidee.value = responseOrchidee.data;
+
+        console.log("Photos récupérées :", photos.value);
+        console.log("Données d'orchidée récupérées :", orchidee.value);
       } catch (error) {
-        console.error("Erreur lors du chargement des photos :", error);
+        console.error("Erreur lors de la récupération des données :", error);
       }
     };
 
-    // Regrouper les photos par nom d’orchidée
-    const groupedPhotos = computed(() => {
-      return photos.value.reduce((acc, photo) => {
-        if (!acc[photo.orchidName]) {
-          acc[photo.orchidName] = [];
-        }
-        acc[photo.orchidName].push(photo.url);
-        return acc;
-      }, {});
-    });
+    // Charger les données au montage du composant
+    onMounted(fetchPhotosAndOrchidee);
 
-    // Charger les photos dès que le composant est monté
-    onMounted(fetchPhotos);
-
-    return { groupedPhotos, fetchPhotos };
+    return { photos, orchidee };
   },
 };
 </script>
+
+
 
 <style scoped>
 .gallery-container {
@@ -56,31 +64,23 @@ export default {
   padding: 20px;
 }
 
-.photo-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.photo-group {
-  background: #f5f5f5;
+.photo-item-container {
+  margin: 10px;
   padding: 10px;
-  border-radius: 8px;
-}
-
-.photo-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.photo-item {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 5px;
   border: 1px solid #ddd;
+  border-radius: 5px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+h3 {
+  margin-top: 20px;
+}
+
+p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #333;
+}
 </style>
+
+

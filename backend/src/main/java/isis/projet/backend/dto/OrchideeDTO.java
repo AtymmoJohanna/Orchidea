@@ -14,8 +14,8 @@ public class OrchideeDTO implements Serializable {
 
     private Integer id;
     private String commentaire;
-    private Integer latitude;
-    private Integer longitude;
+    private float latitude;
+    private float longitude;
     private LocalDate dateEnreg;
     private EtatInflorescence etat;
     private List<Couleur> couleur;

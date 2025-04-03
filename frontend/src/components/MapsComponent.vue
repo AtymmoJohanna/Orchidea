@@ -1,124 +1,65 @@
 <template>
   <div class="map-container">
-    <div class="search-bar">
-      <input v-model="address" placeholder="Entrez une adresse" />
-      <button @click="geocodeAddress">Rechercher</button>
-    </div>
-    <h2>Localisation</h2>
-    <div id="mapcarto" class="map-container">
-    </div>
+    <h2>Localisation de l'orchidée</h2>
+    <div id="mapcarto" class="map-container"></div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
-// --- importer Leaflet et le css associé
+import { onMounted, ref } from "vue";
+import axios from "axios"; // Importer Axios
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-// --  datas à afficher sur la carte
-const cabinetsMedical = [
-  { "nom" : "Maison de Santé Carré Gambetta", "lat" : 43.60411, "lng" : 2.23862 },
-  { "nom" : "Cabinet Médical Gaillac et Luguet", "lat" : 43.60883, "lng" : 2.23078 },
-  { "nom" : "Cabinet Médical de Lameilhé", "lat" : 43.59259, "lng" : 2.25492 },
-  { "nom" : "Cabinet Médical du Saillenc", "lat" :  43.60928, "lng" : 2.25946 }
-]
-// -- Facultatif : définir une icône personnalisée pour les centres médicaux
-const myIcon = L.icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/387/387561.png',
-  iconSize: [48, 48],
-});
 
-// ------------  Fonction pour afficher la carte
-function afficheCarto(){
-  // Initialisation de la carte avec leaftlet
-  //   - la placer dans la div d'id 'mapcarto'
-  //   - la centrer sur Castres avec un zoom de 14
-  let mapcarto = L.map('mapcarto').setView([43.60548, 2.24167], 14); // France
+const orchidee = ref(null); // Stocker les données récupérées
+
+// 🔍 Fonction pour récupérer les données depuis l'API
+const fetchOrchidee = async () => {
+  try {
+    const response = await axios.get("api/orchidees/1");
+    orchidee.value = response.data;
+    console.log("Données récupérées :", orchidee.value);
+    afficheCarto(); // Appeler la fonction pour afficher la carte avec les données
+  } catch (error) {
+    console.error("Erreur lors de la récupération des données :", error);
+  }
+};
+
+// 🌍 Fonction pour afficher la carte avec les coordonnées récupérées
+function afficheCarto() {
+  if (!orchidee.value) {
+    console.warn("Aucune donnée d'orchidée disponible !");
+    return;
+  }
+
+  const { latitude, longitude } = orchidee.value;
+
+  let mapcarto = L.map("mapcarto").setView([latitude, longitude], 14);
 
   // Ajouter un fond de carte (OpenStreetMap)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
   }).addTo(mapcarto);
 
-  // Ajouter les markers :  1 pour chaque centre médical
-  cabinetsMedical.forEach((cabinet) => {
-    L.marker([cabinet.lat, cabinet.lng], {icon: myIcon}).addTo(mapcarto)
-      .bindPopup(cabinet.nom); // Ajouter une popup au marker
-  });
+  // Ajouter un marqueur pour l'orchidée
+  L.marker([latitude, longitude]).addTo(mapcarto).bindPopup("Orchidée");
 
-  // Ajouter un cercle sur la carte
-  L.circle([43.60548, 2.24167], {
-    color: 'blue', fillOpacity: 0.1, radius: 2000
+  // Ajouter un cercle autour de l'orchidée
+  L.circle([latitude, longitude], {
+    color: "blue",
+    fillOpacity: 0.1,
+    radius: 2000,
   }).addTo(mapcarto);
 }
-// -- afficher la carte à la création du composant
-onMounted(afficheCarto);
+
+// 🔥 Exécuter la récupération des données et l'affichage au montage du composant
+onMounted(fetchOrchidee);
 </script>
 
 <style scoped>
 .map-container {
-  position: relative;
-  padding-bottom: 60px;
-  background-color: #dcead2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 15px;
+  width: 80%;
+  height: 700px;
+  margin: 20px;
 }
-
-.search-bar {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 400px;
-  gap: 10px;
-}
-
-input {
-  padding: 10px;
-  width: 100%;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-button {
-  padding: 10px;
-  font-size: 16px;
-  background-color: #2e7d32;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #1b5e20;
-}
-
-#map {
-  margin-top: 15px;
-  width: 100%;
-  max-width: 600px;
-  height: 300px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-/* 📱 Responsive mobile */
-@media (max-width: 600px) {
-  .map-container {
-    padding: 10px;
-  }
-
-  .search-bar {
-    width: 100%;
-  }
-
-  #map {
-    height: 250px;
-  }
-}
-.map-container { width: 80%; height: 700px; margin: 20px;}
 </style>

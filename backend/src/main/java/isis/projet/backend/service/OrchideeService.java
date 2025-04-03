@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class OrchideeService {
@@ -16,4 +18,7 @@ public class OrchideeService {
     public Orchidee createOrchidee(Orchidee orchidee) {
         return orchideeRepository.save(orchidee);
     }
+    public List<Orchidee> getAll() {
+        return orchideeRepository.findAll();
+}
 }
