@@ -21,6 +21,7 @@ public class OrchideeController {
     public Orchidee enregistrerOrchidee(@RequestBody Orchidee Orchidee) {
         return orchideeService.createOrchidee(Orchidee);
     }
+
     @GetMapping
     public List<Orchidee> getAllOrchidees() {
         return orchideeService.getAll();

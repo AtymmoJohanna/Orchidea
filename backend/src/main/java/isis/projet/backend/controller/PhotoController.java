@@ -23,6 +23,7 @@ public class PhotoController {
     public Photo savePhoto(@RequestBody Photo photo) {
         photo.setDatePriseVue(LocalDate.now()); // Set the current date
         return photoRepository.save(photo); // Save the photo to the database
+
     }
     public ResponseEntity<Photo> getPhoto(@PathVariable Integer id) {
         Optional<Photo> photoOptional = photoRepository.findById(id);

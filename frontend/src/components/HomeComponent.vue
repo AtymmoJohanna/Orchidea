@@ -88,7 +88,6 @@ export default {
         console.error("Erreur lors de la récupération des données :", error);
       }
     };
-
     onMounted(() => {
       fetchPhotosAndOrchidee();
       getPhoto(1);

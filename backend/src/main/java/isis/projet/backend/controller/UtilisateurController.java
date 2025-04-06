@@ -42,6 +42,7 @@ public class UtilisateurController {
 
         if (utilisateurExistant.isPresent()) {
             Utilisateur u = utilisateurExistant.get();
+
             if (u.getPwd().equals(utilisateur.getPwd())) {
                 return ResponseEntity.ok(u); // ✅ Connexion réussie, renvoie les infos utilisateur
             } else {
