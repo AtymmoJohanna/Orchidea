@@ -1,25 +1,35 @@
 <template>
   <div class="gallery-container">
     <h2>Galerie d'Images</h2>
-    <div v-if="photos.length === 0">Aucune image disponible.</div>
-    <div v-else>
-      <div v-for="(photo, index) in photos" :key="index" class="photo-item-container">
-        <p><strong>URL de l'image:</strong> {{ photo.url }}</p>
-        <p><strong>Auteur:</strong> {{ photo.auteur }}</p>
-          <!-- Ajouter la description si nécessaire -->
-      </div>
+
+    <div v-if="isPhotoLoading">Chargement de la photo...</div>
+    <div v-else-if="photos && photos.url">
+      <img :src="photos.url" alt="Image Base64" style="max-width: 100%; height: auto;" />
     </div>
 
     <div v-if="orchidee">
       <h3>Informations sur l'Orchidée</h3>
-      <p><strong>Nom:</strong> {{ orchidee.nom }}</p>  <!-- Assurez-vous que les données d'orchidée existent -->
+      <p><strong>ID:</strong> {{ orchidee.id }}</p>
+      <p><strong>Commentaire:</strong> {{ orchidee.commentaire }}</p>
       <p><strong>Latitude:</strong> {{ orchidee.latitude }}</p>
       <p><strong>Longitude:</strong> {{ orchidee.longitude }}</p>
+      <p><strong>Date d'enregistrement:</strong> {{ orchidee.dateEnreg }}</p>
+      <p><strong>État de l'inflorescence:</strong> {{ orchidee.etat }}</p>
+      <p><strong>Variabilité du taxon:</strong> {{ orchidee.varTaxon }}</p>
+      <p><strong>Nombre d'individus:</strong> {{ orchidee.nbreIndividu }}</p>
+      <p><strong>Forme:</strong> {{ orchidee.forme }}</p>
+      <p><strong>Couleurs:</strong> {{ orchidee.couleur?.join(', ') }}</p>
+      <p><strong>Motifs:</strong> {{ orchidee.motif?.join(', ') }}</p>
+
+      <div v-if="espece">
+        <p><strong>Espèce :</strong> {{ espece.nomScientifique }}</p>
+      </div>
+      <div v-if="auteur">
+        <p><strong>Auteur :</strong> {{ auteur.nom }} {{ auteur.prenom }}</p>
+      </div>
     </div>
   </div>
 </template>
-
-
 
 <script>
 import { ref, onMounted } from "vue";
@@ -27,36 +37,73 @@ import axios from "axios";
 
 export default {
   setup() {
-    const photos = ref([]);  // Tableau pour stocker les photos et leurs informations
-    const orchidee = ref(null);  // Stocker les données de l'orchidée
+    const photos = ref(null);
+    const orchidee = ref(null);
+    const espece = ref(null);
+    const auteur = ref(null);
+    const isPhotoLoading = ref(true);
 
-    // Fonction pour récupérer les données des photos et de l'orchidée
+    const getPhoto = async (id) => {
+      isPhotoLoading.value = true;
+      try {
+        const response = await axios.get(`api/photos/${id}`);
+        photos.value = response.data;
+      } catch (error) {
+        console.error("Erreur lors de la récupération de la photo :", error);
+      } finally {
+        isPhotoLoading.value = false;
+      }
+    };
+
+    const fetchEspece = async (url) => {
+      try {
+        const response = await axios.get(url);
+        espece.value = response.data;
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'espèce :", error);
+      }
+    };
+
+    const fetchAuteur = async (url) => {
+      try {
+        const response = await axios.get(url);
+        auteur.value = response.data;
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'auteur :", error);
+      }
+    };
+
     const fetchPhotosAndOrchidee = async () => {
       try {
-        // Récupérer les photos depuis l'API
-        const responsePhotos = await axios.get("/api/photos");
-        photos.value = responsePhotos.data;
-
-        // Récupérer les informations sur l'orchidée
-        const responseOrchidee = await axios.get("api/orchidees");
+        const responseOrchidee = await axios.get("api/orchidees/1");
         orchidee.value = responseOrchidee.data;
+        console.log(orchidee.value);
+        // Récupération des liens vers l'auteur et l'espèce
+        const especeUrl = orchidee.value._links?.espece?.href;
+        const auteurUrl = orchidee.value._links?.auteur?.href;
 
-        console.log("Photos récupérées :", photos.value);
-        console.log("Données d'orchidée récupérées :", orchidee.value);
+        if (especeUrl) await fetchEspece(especeUrl);
+        if (auteurUrl) await fetchAuteur(auteurUrl);
       } catch (error) {
         console.error("Erreur lors de la récupération des données :", error);
       }
     };
 
-    // Charger les données au montage du composant
-    onMounted(fetchPhotosAndOrchidee);
+    onMounted(() => {
+      fetchPhotosAndOrchidee();
+      getPhoto(1);
+    });
 
-    return { photos, orchidee };
+    return {
+      photos,
+      orchidee,
+      espece,
+      auteur,
+      isPhotoLoading,
+    };
   },
 };
 </script>
-
-
 
 <style scoped>
 .gallery-container {
@@ -82,5 +129,3 @@ p {
   color: #333;
 }
 </style>
-
-

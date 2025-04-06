@@ -2,7 +2,6 @@ package isis.projet.backend.config;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.Type;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 @Component
-public class SpringDataRestConfig
-        implements RepositoryRestConfigurer {
+public class SpringDataRestConfig implements RepositoryRestConfigurer {
+
     @Autowired
     private EntityManager entityManager;
 
@@ -24,5 +23,11 @@ public class SpringDataRestConfig
                 .stream()
                 .map(Type::getJavaType)
                 .toArray(Class[]::new));
+
+        // Configure CORS settings
+        cors.addMapping("/**")
+                .allowedOrigins("http://localhost:5173") // Replace with your frontend URL
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*");
     }
 }

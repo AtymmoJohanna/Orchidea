@@ -26,6 +26,7 @@ export default defineConfig({
       '/api': { // L'API REST autogénérée, correspond à la config du backend spring.data.rest.base-path dans application.properties
         target: 'http://localhost:8989', // correspond à la config du backend server.port dans application.properties
         changeOrigin: true,
+        pathRewrite: { '^/api': '' },
       },
       '/rest': { // L'adresse des contrôleurs ad-hoc pour les services métier
         target: 'http://localhost:8989', // correspond à la config du backend server.port dans application.properties

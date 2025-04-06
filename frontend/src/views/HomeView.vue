@@ -1,16 +1,17 @@
 <template>
   <div class="home-view-container">
+    <HomeComponent />
     <FooterVue />
   </div>
 </template>
 
 <script>
 import FooterVue from "@/components/FooterVue.vue";
-import homeComponent from '@/components/HomeComponent.vue'
+import HomeComponent from '@/components/HomeComponent.vue'
 
 export default {
   components: {
-    homeComponent,
+    HomeComponent,
     FooterVue,
   },
 };

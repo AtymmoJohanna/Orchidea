@@ -170,13 +170,13 @@ const getLocation = () => {
         const longitude = position.coords.longitude;
 
         // Vérifiez que les coordonnées sont correctement définies
-        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+        // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
 
         // Mettre à jour userFormData
         userFormData.latitude = latitude;
         userFormData.longitude = longitude;
 
-        console.log("userFormData après mise à jour:", userFormData);
+        // console.log("userFormData après mise à jour:", userFormData);
       },
       (error) => {
         console.error("Erreur de géolocalisation :", error);
@@ -235,7 +235,7 @@ const soumettreFormulaire = async () => {
       auteur: photo.auteur,
       specimen: orchideeResponse.data, // Associer l'orchidée enregistrée à la photo
     };
-
+    // console.log(photo.url);
     await axios.post("/api/photos", photoData);
 
     localStorage.removeItem("photo");
