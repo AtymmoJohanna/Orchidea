@@ -241,7 +241,7 @@ const soumettreFormulaire = async () => {
     localStorage.removeItem("photo");
 
     alert("Photo enregistrée avec succès !");
-    router.push("/");
+    router.push("/home");
   } catch (error) {
     console.error("Erreur lors de l'enregistrement de la photo :", error);
     alert("Une erreur est survenue lors de l'enregistrement de la photo.");

@@ -7,14 +7,7 @@
 </template>
 
 <script>
-import MapsVue from "@/components/HomeComponent.vue";
-
-
-export default {
-  components: {
-    MapsVue,
-  },
-};
+export default {}
 </script>
 
 

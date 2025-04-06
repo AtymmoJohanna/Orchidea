@@ -7,15 +7,17 @@ import ChatView from '@/views/ChatView.vue'
 import HomeView from '@/views/HomeView.vue'
 import InscritView from '@/views/InscritView.vue'
 import ConexView from '@/views/ConexView.vue'
+import SplashScreen from '@/views/SplashScreen.vue'
 
 const routes = [
+  { path: "/", component: SplashScreen },
   { path: "/inscrit", component: InscritView },
   { path: "/stats", component: StatView },
   { path: "/camera", component: CameraView },
   { path: "/param", component: ParamView },
   { path: "/formulaire/:photo?", name: "formulaire", component: FormView, props: true },
   { path: "/com", component: ChatView },
-  {path: "/", component: HomeView },
+  {path: "/home", component: HomeView },
   { path: "/connexion", component: ConexView },
 ];
 
