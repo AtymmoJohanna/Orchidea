@@ -45,7 +45,7 @@ export default {
 
     const user = await response.json();
     localStorage.setItem("user", JSON.stringify(user)); // Stocker l'utilisateur
-    router.push("/"); // Rediriger vers ParametreComponent
+    router.push("/home"); // Rediriger vers ParametreComponent
   } catch (error) {
     console.error(error);
     alert("Email ou mot de passe incorrect !");
