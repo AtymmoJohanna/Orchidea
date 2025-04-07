@@ -9,7 +9,7 @@
           <span class="avatar">👤</span>
           <span class="name">{{ review.author }}</span>
           <span class="date">{{ review.date }}</span>
-          <span class="heure">{{review.heure}}</span>
+          <span class="heure">{{ review.heure }}</span>
         </div>
         <div class="review-content">
           {{ review.message }}
@@ -42,13 +42,28 @@ import axios from "axios";
 export default {
   data() {
     return {
-      message: "", // Stocke l'avis en cours d'écriture
-      showConfirmation: false, // Affiche le message de confirmation
+      message: "",
+      showConfirmation: false,
       reviews: [],
-      utilisateurId: 1, // Remplace par l'ID réel de l'utilisateur connecté
+      utilisateurId: 1, // Remplacer par l’ID réel de l’utilisateur connecté
     };
   },
   methods: {
+    async fetchReviews() {
+      try {
+        const response = await axios.get("http://localhost:8989/api/avis");
+
+        this.reviews = response.data.map(avis => ({
+          author: avis.emetteurNom || "Utilisateur",
+          date: new Date(avis.date).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }),
+          heure: new Date(avis.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+          message: avis.commentaire,
+        }));
+      } catch (error) {
+        console.error("Erreur lors de la récupération des avis :", error);
+      }
+    },
+
     async submitMessage() {
       if (!this.message.trim()) return;
 
@@ -58,21 +73,15 @@ export default {
           emetteurId: this.utilisateurId,
         };
 
-        const response = await axios.post("http://localhost:8989/api/avis", avisDTO);
+        const response = await axios.post("http://localhost:8989/api/avis", avisDTO, {
+          headers: { "Content-Type": "application/json" },
+        });
 
-        console.log("Réponse du serveur :", response.data); // 🔍 Vérifier l'avis enregistré
-
-        if (response.status === 200) {
-          const newReview = {
-            author: "Utilisateur",
-            date: new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }),
-            heure: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-            message: this.message,
-          };
-          this.reviews.push(newReview);
-
+        if (response.status === 200 || response.status === 201) {
           this.message = "";
           this.showConfirmation = true;
+
+          await this.fetchReviews();
 
           setTimeout(() => {
             this.showConfirmation = false;
@@ -81,11 +90,15 @@ export default {
       } catch (error) {
         console.error("Erreur lors de l'enregistrement de l'avis :", error);
       }
-    }
+    },
+  },
 
+  mounted() {
+    this.fetchReviews();
   },
 };
 </script>
+
 
 
 <style scoped>

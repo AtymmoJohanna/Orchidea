@@ -1,6 +1,7 @@
 package isis.projet.backend.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -10,8 +11,6 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@RequiredArgsConstructor
 @ToString
 
 
@@ -31,11 +30,17 @@ public class Avis {
     @Column(nullable = false)
     @ToString.Exclude
     // Initialisée avec la date de création
-    private LocalDate date = LocalDate.now();
+    private LocalDateTime date = LocalDateTime.now();
 
     @ManyToOne(optional = false)
     @NonNull
     private Utilisateur emetteur ;
 
+    public Avis() {}
+
+    public Avis(String commentaire, Utilisateur emetteur) {
+        this.commentaire = commentaire;
+        this.emetteur = emetteur;
+        this.date = LocalDateTime.now();}
 }
 

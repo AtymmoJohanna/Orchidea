@@ -1,32 +1,29 @@
 package isis.projet.backend.controller;
 
-import isis.projet.backend.dao.UtilisateurRepository;
 import isis.projet.backend.dto.AvisDTO;
-import isis.projet.backend.entity.Avis;
-import isis.projet.backend.entity.Utilisateur;
 import isis.projet.backend.service.AvisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/avis")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173") // autoriser les requêtes du frontend
 public class AvisController {
+
     private final AvisService avisService;
-    private final UtilisateurRepository utilisateurRepository;
 
     @PostMapping
     public ResponseEntity<AvisDTO> createAvis(@RequestBody AvisDTO avisDTO) {
-        Utilisateur emetteur = utilisateurRepository.findById(avisDTO.getEmetteurId())
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        AvisDTO saved = avisService.createAvis(avisDTO);
+        return ResponseEntity.ok(saved);
+    }
 
-        Avis avis = new Avis(avisDTO.getCommentaire(), emetteur);
-        Avis savedAvis = avisService.createAvis(avis);
-
-        return ResponseEntity.ok(new AvisDTO(savedAvis));  // ✅ La conversion se fait ici
+    @GetMapping
+    public List<AvisDTO> getAllAvis() {
+        return avisService.getAllAvis();
     }
 }

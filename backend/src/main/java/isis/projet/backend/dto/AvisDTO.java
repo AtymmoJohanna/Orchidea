@@ -14,12 +14,16 @@ public class AvisDTO implements Serializable {
     private String commentaire;
     private String date;
     private Integer emetteurId;
+    private String emetteurNom; // <-- ajoute ce champ
+
+    public AvisDTO() {}
 
     public AvisDTO(Avis avis) {
         this.id = avis.getId();
         this.commentaire = avis.getCommentaire();
-        this.date = avis.getDate().toString(); // Assuming you want the date as a String
-        this.emetteurId = avis.getEmetteur().getId(); // Assuming you're using the ID of User as emetteurId
+        this.date = avis.getDate().toString();
+        this.emetteurId = avis.getEmetteur().getId();
+        this.emetteurNom = avis.getEmetteur().getNom(); // Assure-toi que "getNom()" existe
     }
-
 }
+
