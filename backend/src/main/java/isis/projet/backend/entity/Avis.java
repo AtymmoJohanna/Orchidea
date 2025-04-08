@@ -28,6 +28,7 @@ public class Avis {
 
     @Basic(optional = false)
     @Column(nullable = false)
+
     @ToString.Exclude
     // Initialisée avec la date de création
     private LocalDateTime date = LocalDateTime.now();
