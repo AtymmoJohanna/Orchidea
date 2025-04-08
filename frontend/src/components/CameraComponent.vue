@@ -13,7 +13,8 @@
     <p class="text" v-if="!photos.length">Appuyez pour identifier</p>
 
     <div class="buttons">
-      <button class="gallery-button">
+      <!-- Galerie Button with File Input -->
+      <button class="gallery-button" @click="triggerFileInput">
         <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
       </button>
 
@@ -21,6 +22,9 @@
         <img src="@/assets/cam-logo.png" alt="Camera" class="camera-img" />
       </button>
     </div>
+
+    <!-- File input for selecting image from gallery (hidden) -->
+    <input type="file" ref="fileInput" @change="handleFileSelect" accept="image/*" style="display: none;" />
 
     <!-- Bouton pour valider et continuer -->
     <button v-if="photos.length" class="validate-button" @click="savePhoto">Valider</button>
@@ -101,10 +105,25 @@ export default {
       }
     };
 
+    // Handle file input selection
+    const handleFileSelect = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          photos.value.push(e.target.result); // Add the selected photo to the gallery
+        };
+        reader.readAsDataURL(file);
+      }
+    };
 
+    // Trigger file input
+    const triggerFileInput = () => {
+      const fileInput = document.querySelector('input[type="file"]');
+      fileInput.click(); // Trigger the file input click event
+    };
 
-
-    return { photos, openCamera, capturePhoto, removePhoto, savePhoto, isCameraOpen };
+    return { photos, openCamera, capturePhoto, removePhoto, savePhoto, isCameraOpen, handleFileSelect, triggerFileInput };
   },
 };
 </script>
