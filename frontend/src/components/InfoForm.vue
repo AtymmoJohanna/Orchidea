@@ -238,6 +238,7 @@ const soumettreFormulaire = async () => {
     // console.log(photo.url);
     await axios.post("/api/photos", photoData);
 
+
     localStorage.removeItem("photo");
 
     alert("Photo enregistrée avec succès !");
