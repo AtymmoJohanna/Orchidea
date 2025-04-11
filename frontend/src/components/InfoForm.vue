@@ -2,9 +2,26 @@
   <div class="container info-container">
     <div class="card">
       <h2 class="title">Plus d'informations !</h2>
+
+      <!-- Aperçu des photos -->
+      <div class="photo-preview" v-if="photos.length">
+        <h3>Photos sélectionnées :</h3>
+        <div class="image-gallery">
+          <div v-for="(photo, index) in photos" :key="index" class="image-container">
+            <img :src="photo.url" alt="Photo" class="preview-image" />
+            <button class="delete-button" @click="removePhoto(index)">❌</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message de chargement ou d'erreur -->
+      <div v-if="isLoadingEnums" class="loading-message">Chargement des options...</div>
+      <div v-else-if="data.messageErreur && !data.especesOrchidee.length" class="error-message">
+        {{ data.messageErreur }}
+      </div>
+
       <form @submit.prevent="soumettreFormulaire">
         <div class="expansion-panels">
-          <!-- Nom de l'orchidée -->
           <details class="expansion-panel">
             <summary>Nom de l'orchidée</summary>
             <div class="expansion-content">
@@ -16,7 +33,6 @@
             </div>
           </details>
 
-          <!-- État d’inflorescence -->
           <details class="expansion-panel">
             <summary>État d’inflorescence</summary>
             <div class="expansion-content">
@@ -30,13 +46,11 @@
             </div>
           </details>
 
-          <!-- Nombre d’individus -->
           <details class="expansion-panel">
             <summary>Nombre d’individus</summary>
             <div class="expansion-content">
               <label>
                 Nombre d’individus
-                <!--<input v-model="data.nombresIndividus" type="number" min="0" required /> -->
                 <select v-model="userFormData.nombreIndividus" required>
                   <option value="" disabled>Nombre d'individus</option>
                   <option v-for="nbre in data.nombresIndividus" :key="nbre" :value="nbre">{{ nbre }}</option>
@@ -45,7 +59,6 @@
             </div>
           </details>
 
-          <!-- Variabilité taxon -->
           <details class="expansion-panel">
             <summary>État</summary>
             <div class="expansion-content">
@@ -59,7 +72,6 @@
             </div>
           </details>
 
-          <!-- Couleur dominante -->
           <details class="expansion-panel">
             <summary>Couleur</summary>
             <div class="expansion-content">
@@ -73,7 +85,6 @@
             </div>
           </details>
 
-          <!-- Motif pétale -->
           <details class="expansion-panel">
             <summary>Motif</summary>
             <div class="expansion-content">
@@ -87,7 +98,6 @@
             </div>
           </details>
 
-          <!-- Forme florale -->
           <details class="expansion-panel">
             <summary>Forme</summary>
             <div class="expansion-content">
@@ -101,7 +111,6 @@
             </div>
           </details>
 
-          <!-- Commentaire -->
           <details class="expansion-panel">
             <summary>Commentaire</summary>
             <div class="expansion-content">
@@ -113,37 +122,39 @@
           </details>
         </div>
 
-        <button @click="soumettreFormulaire">Enregistrer</button>
+        <button type="submit" :disabled="isSubmitting || !data.especesOrchidee.length">
+          Enregistrer
+        </button>
       </form>
 
-      <!-- Messages de statut -->
       <div v-if="data.messageSucces" class="success-message">{{ data.messageSucces }}</div>
-      <div v-if="data.messageErreur" class="error-message">{{ data.messageErreur }}</div>
+      <div v-if="data.messageErreur && data.especesOrchidee.length" class="error-message">
+        {{ data.messageErreur }}
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import axios from "axios";
-import { useRoute } from 'vue-router'
-import router from '@/router/index.js'
-const route = useRoute();
+import { useRouter } from "vue-router";
 
-// données saisies par l'utilisateur
+const router = useRouter();
+
 const userFormData = reactive({
-  especeOrchidee: '', // Nom de l'orchidée
-  etatInflorescence: '', // État d’inflorescence
-  nombreIndividus: '', // Nombre d’individus
-  varTaxon: '', // Variabilité taxon
-  couleur: '', // Couleur dominante
-  motif: '', // Motif pétale
-  forme: '', // Forme florale
-  commentaire: '' // Commentaire
+  especeOrchidee: "",
+  etatInflorescence: "",
+  nombreIndividus: "",
+  varTaxon: "",
+  couleur: "",
+  motif: "",
+  forme: "",
+  commentaire: "",
+  latitude: null,
+  longitude: null,
 });
 
-// Données recuperées du back
 const data = reactive({
   especesOrchidee: [],
   etatsInflorescence: [],
@@ -152,68 +163,73 @@ const data = reactive({
   couleurs: [],
   motifs: [],
   formes: [],
-  messageSucces: '',
-  messageErreur: ''
+  messageSucces: "",
+  messageErreur: "",
 });
 
-// 🟢 Récupérer la photo depuis localStorage
-const storedPhoto = localStorage.getItem("photo");
-const photo = storedPhoto ? JSON.parse(storedPhoto) : null;
+const photos = ref([]);
+const isSubmitting = ref(false);
+const isLoadingEnums = ref(false);
 
-let isSubmitting = false;
-
-const getLocation = () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        // Vérifiez que les coordonnées sont correctement définies
-        // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-
-        // Mettre à jour userFormData
-        userFormData.latitude = latitude;
-        userFormData.longitude = longitude;
-
-        // console.log("userFormData après mise à jour:", userFormData);
-      },
-      (error) => {
-        console.error("Erreur de géolocalisation :", error);
-        alert("Impossible de récupérer votre position.");
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      }
-    );
-  } else {
-    alert("La géolocalisation n'est pas supportée par votre navigateur.");
-  }
+const resetFormData = () => {
+  Object.assign(userFormData, {
+    especeOrchidee: "",
+    etatInflorescence: "",
+    nombreIndividus: "",
+    varTaxon: "",
+    couleur: "",
+    motif: "",
+    forme: "",
+    commentaire: "",
+    latitude: null,
+    longitude: null,
+  });
+  console.log("Formulaire réinitialisé");
 };
 
+const getLocation = () => {
+  return new Promise((resolve, reject) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userFormData.latitude = position.coords.latitude;
+          userFormData.longitude = position.coords.longitude;
+          resolve();
+        },
+        (error) => {
+          console.error("Erreur de géolocalisation :", error);
+          reject(new Error("Impossible de récupérer votre position."));
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    } else {
+      reject(new Error("La géolocalisation n'est pas supportée."));
+    }
+  });
+};
+
+const removePhoto = (index) => {
+  photos.value.splice(index, 1);
+  localStorage.setItem("photos", JSON.stringify(photos.value));
+  console.log("Photo supprimée, restantes :", photos.value.length);
+};
 
 const soumettreFormulaire = async () => {
-  if (isSubmitting) return; // Empêcher une deuxième soumission
-  isSubmitting = true;
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+
+  if (!photos.value.length) {
+    data.messageErreur = "Aucune photo sélectionnée.";
+    isSubmitting.value = false;
+    return;
+  }
 
   try {
-    // Récupérer la position GPS avant de soumettre
-    await new Promise((resolve, reject) => {
-      getLocation(); // Appeler la fonction pour obtenir les coordonnées
-      setTimeout(() => {  // Utiliser un délai pour attendre la mise à jour de `userFormData`
-        if (userFormData.latitude && userFormData.longitude) {
-          resolve();
-        } else {
-          reject(new Error('Les coordonnées n\'ont pas été récupérées.'));
-        }
-      }, 3000); // Attendre 3 secondes pour récupérer les coordonnées
-    });
+    await getLocation();
+    console.log("Géolocalisation récupérée :", userFormData.latitude, userFormData.longitude);
 
-    // Créer un objet Orchidee avec les nouvelles coordonnées
     const newOrchidee = {
-      commentaire: userFormData.commentaire,
+      commentaire: userFormData.commentaire || "",
       etat: userFormData.etatInflorescence,
       couleur: userFormData.couleur ? [userFormData.couleur] : [],
       varTaxon: userFormData.varTaxon,
@@ -221,78 +237,137 @@ const soumettreFormulaire = async () => {
       motif: userFormData.motif ? [userFormData.motif] : [],
       forme: userFormData.forme,
       espece: userFormData.especeOrchidee,
-      auteur: photo.auteur,
-      latitude: userFormData.latitude, // Utiliser la latitude récupérée
-      longitude: userFormData.longitude, // Utiliser la longitude récupérée
+      auteur: photos.value[0].auteur,
+      latitude: userFormData.latitude,
+      longitude: userFormData.longitude,
     };
+    console.log("Nouvelle orchidée à envoyer :", newOrchidee);
 
-    // Enregistrer l'objet Orchidee dans la base de données
-    const orchideeResponse = await axios.post("/api/orchidees", newOrchidee, { withCredentials: false});
+    const orchideeResponse = await axios.post("/api/orchidees", newOrchidee, {
+      withCredentials: false,
+    });
+    console.log("Orchidée enregistrée, ID :", orchideeResponse.data.id);
 
-    // Après avoir obtenu l'Orchidee enregistré, créer l'objet photo
-    const photoData = {
-      url: photo.url,
-      auteur: photo.auteur,
-      specimen: orchideeResponse.data, // Associer l'orchidée enregistrée à la photo
-    };
-    // console.log(photo.url);
-    await axios.post("/api/photos", photoData);
+    for (const photo of photos.value) {
+      const photoData = {
+        url: photo.url,
+        auteur: photo.auteur,
+        specimen: orchideeResponse.data,
+      };
+      console.log("Envoi de la photo :", photoData);
+      await axios.post("/api/photos", photoData);
+    }
 
+    localStorage.removeItem("photos");
+    resetFormData();
+    photos.value = [];
 
-    localStorage.removeItem("photo");
-
-    alert("Photo enregistrée avec succès !");
+    data.messageSucces = "Orchidée et photos enregistrées avec succès !";
     router.push("/home");
   } catch (error) {
-    console.error("Erreur lors de l'enregistrement de la photo :", error);
-    alert("Une erreur est survenue lors de l'enregistrement de la photo.");
+    console.error("Erreur lors de l'enregistrement :", error);
+    data.messageErreur =
+      error.response?.data?.message || "Erreur lors de l'enregistrement.";
   } finally {
-    isSubmitting = false; // Réinitialiser après la requête
+    isSubmitting.value = false;
   }
 };
 
-
-// Fonction pour récupérer les données des enums
 const getEnumData = async () => {
-  try {
-    // Remplace l'URL par ton API backend pour chaque enum
-    const [especes, etatsInflorescence, nbreIndividus, varTaxon, couleurs, motifs, formes] = await Promise.all([
-      axios.get("/api/especeOrchidees"),
-      axios.get('/api/enums/etats-inflorescence'),
-      axios.get('/api/enums/nbre-individus'),
-      axios.get('/api/enums/variabilites-taxons'),
-      axios.get('/api/enums/couleurs'),
-      axios.get('/api/enums/motifs'),
-      axios.get('/api/enums/formes')
-    ]);
+  isLoadingEnums.value = true;
+  data.messageErreur = ""; // Réinitialiser le message d'erreur
 
-    // Remplir les données dans le modèle réactif
-    //data.especesOrchidee = especes.data.map(e => e.nomScientifique);
+  try {
+    // Charger chaque endpoint séquentiellement
+    console.log("Chargement des espèces...");
+    const especes = await axios.get("/api/especeOrchidees", {
+      headers: { "Cache-Control": "no-cache" },
+    });
     data.especesOrchidee = especes.data.map(espece => ({
       code: espece.code,
       nomScientifique: espece.nomScientifique
     }));
-    console.log(especes.data);
-    data.etatsInflorescence = etatsInflorescence.data;
-    data.nombresIndividus = nbreIndividus.data;
-    data.varTaxon = varTaxon.data;
-    data.couleurs = couleurs.data;
-    data.motifs = motifs.data;
-    data.formes = formes.data;
+    console.log("Espèces chargées :", data.especesOrchidee);
 
+    console.log("Chargement des états d'inflorescence...");
+    const etatsInflorescence = await axios.get("/api/enums/etats-inflorescence", {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    data.etatsInflorescence = etatsInflorescence.data;
+    console.log("États d'inflorescence chargés :", data.etatsInflorescence);
+
+    console.log("Chargement des nombres d'individus...");
+    const nbreIndividus = await axios.get("/api/enums/nbre-individus", {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    data.nombresIndividus = nbreIndividus.data;
+    console.log("Nombres d'individus chargés :", data.nombresIndividus);
+
+    console.log("Chargement des variabilités taxons...");
+    const varTaxon = await axios.get("/api/enums/variabilites-taxons", {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    data.varTaxon = varTaxon.data;
+    console.log("Variabilités taxons chargées :", data.varTaxon);
+
+    console.log("Chargement des couleurs...");
+    const couleurs = await axios.get("/api/enums/couleurs", {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    data.couleurs = couleurs.data;
+    console.log("Couleurs chargées :", data.couleurs);
+
+    console.log("Chargement des motifs...");
+    const motifs = await axios.get("/api/enums/motifs", {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    data.motifs = motifs.data;
+    console.log("Motifs chargés :", data.motifs);
+
+    console.log("Chargement des formes...");
+    const formes = await axios.get("/api/enums/formes", {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    data.formes = formes.data;
+    console.log("Formes chargées :", data.formes);
+
+    console.log("Enums chargés avec succès");
   } catch (error) {
-    console.error('Erreur lors de la récupération des enums:', error);
-    data.messageErreur = 'Impossible de charger les options. Veuillez réessayer plus tard.';
+    console.error("Erreur lors de la récupération des enums :", error);
+    data.messageErreur = "Impossible de charger les options. Vérifiez votre connexion ou le serveur.";
+  } finally {
+    isLoadingEnums.value = false;
   }
 };
 
-// Utiliser onMounted pour charger les enums au chargement du composant
-onMounted(() => {
-  getEnumData();
-  const storedPhoto = localStorage.getItem("photo");
-  photo.value = storedPhoto ? JSON.parse(storedPhoto) : null;
-});
+onMounted(async () => {
+  console.log("Début du montage de InfoForm");
+  resetFormData();
+  photos.value = [];
 
+  try {
+    const storedPhotos = localStorage.getItem("photos");
+    if (storedPhotos) {
+      photos.value = JSON.parse(storedPhotos);
+      console.log("Photos chargées depuis localStorage :", photos.value);
+    } else {
+      console.log("Aucune photo dans localStorage");
+    }
+
+    if (!photos.value.length) {
+      data.messageErreur = "Aucune photo trouvée.";
+      console.log("Redirection vers CameraComponent : aucune photo");
+      router.push("/camera");
+      return;
+    }
+
+    await getEnumData();
+    console.log("Montage de InfoForm terminé");
+  } catch (error) {
+    console.error("Erreur dans onMounted :", error);
+    data.messageErreur = "Erreur lors du chargement des données.";
+  }
+});
 </script>
 
 <style scoped>
@@ -315,7 +390,7 @@ onMounted(() => {
 }
 
 .title {
-  color: #2E7D32;
+  color: #2e7d32;
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
@@ -345,7 +420,9 @@ label {
   margin-bottom: 1rem;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   padding: 0.5rem;
   margin-top: 0.5rem;
   border: 1px solid #ccc;
@@ -353,7 +430,7 @@ input, select, textarea {
 }
 
 button {
-  background-color: #2E7D32;
+  background-color: #2e7d32;
   color: #fff;
   padding: 0.75rem;
   border: none;
@@ -366,5 +443,61 @@ button {
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.photo-preview {
+  margin-bottom: 1.5rem;
+}
+
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.image-container {
+  position: relative;
+}
+
+.preview-image {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: white;
+  color: red;
+  border: 2px solid red;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-message {
+  color: #2e7d32;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.error-message {
+  color: red;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.loading-message {
+  color: #2e7d32;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 </style>

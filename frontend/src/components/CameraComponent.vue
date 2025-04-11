@@ -13,23 +13,17 @@
     <p class="text" v-if="!photos.length">Appuyez pour identifier</p>
 
     <div class="buttons">
-      <!-- Galerie Button with File Input -->
       <button class="gallery-button" @click="triggerFileInput">
         <img src="@/assets/galerie.png" alt="Galerie" class="button-img" />
       </button>
-
       <button class="camera-button" @click="openCamera">
         <img src="@/assets/cam-logo.png" alt="Camera" class="camera-img" />
       </button>
     </div>
 
-    <!-- File input for selecting image from gallery (hidden) -->
     <input type="file" ref="fileInput" @change="handleFileSelect" accept="image/*" style="display: none;" />
+    <button v-if="photos.length" class="validate-button" @click="savePhotos">Valider</button>
 
-    <!-- Bouton pour valider et continuer -->
-    <button v-if="photos.length" class="validate-button" @click="savePhoto">Valider</button>
-
-    <!-- Zone pour afficher le flux vidéo de la caméra -->
     <div v-if="isCameraOpen">
       <video class="video" ref="video" width="320" height="240" autoplay></video>
       <button class="validate-button" @click="capturePhoto">Prendre une photo</button>
@@ -40,25 +34,33 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
   setup() {
     const user = JSON.parse(localStorage.getItem("user"));
-    const photos = ref([]); // Store captured photos
-    const isCameraOpen = ref(false); // Track if the camera is open
+    const photos = ref([]);
+    const isCameraOpen = ref(false);
     const router = useRouter();
+
+    onMounted(() => {
+      photos.value = []; // Réinitialisation explicite
+      localStorage.removeItem("photos"); // Nettoyer les photos précédentes
+      console.log("CameraComponent monté : photos réinitialisées, localStorage nettoyé");
+    });
 
     const openCamera = () => {
       isCameraOpen.value = true;
-      navigator.mediaDevices.getUserMedia({ video: true })
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
         .then((stream) => {
           const videoElement = document.querySelector("video");
           videoElement.srcObject = stream;
         })
         .catch((error) => {
           console.error("Erreur d'accès à la caméra: ", error);
+          alert("Impossible d'accéder à la caméra.");
         });
     };
 
@@ -67,63 +69,69 @@ export default {
       const video = document.querySelector("video");
       const context = canvas.getContext("2d");
 
-      // Capture the current frame from the video stream and draw it to the canvas
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Convert the image from the canvas to a data URL
-      const imageDataUrl = canvas.toDataURL('image/png');
-
-      // Add the captured photo to the gallery
+      const imageDataUrl = canvas.toDataURL("image/png");
       photos.value.push(imageDataUrl);
-
-      // Close the camera after taking a photo
       isCameraOpen.value = false;
+      console.log("Photo capturée :", photos.value.length, "photos au total");
     };
 
     const removePhoto = (index) => {
-      photos.value.splice(index, 1); // Remove the photo from the gallery
+      photos.value.splice(index, 1);
+      console.log("Photo supprimée, restantes :", photos.value.length);
     };
 
-    const savePhoto = async () => {
-      if (!photos.value.length) return;
+    const savePhotos = async () => {
+      if (!photos.value.length) {
+        alert("Aucune photo à enregistrer.");
+        return;
+      }
+      if (!user) {
+        alert("Utilisateur non authentifié.");
+        return;
+      }
 
       try {
-        const photoData = {
-          url: photos.value[0], // Première photo capturée
+        const photosData = photos.value.map((photoUrl) => ({
+          url: photoUrl,
           auteur: user,
-        };
-
-        // Stocker la photo dans localStorage pour la récupérer dans le formulaire
-        localStorage.setItem("photo", JSON.stringify(photoData));
-
-        // Rediriger vers le formulaire sans passer par `route.params`
+        }));
+        localStorage.setItem("photos", JSON.stringify(photosData));
+        console.log("Photos sauvegardées dans localStorage :", photosData);
         router.push({ name: "formulaire" });
-
       } catch (error) {
-        console.error("Erreur lors de l'enregistrement de la photo :", error);
-        alert("Une erreur est survenue lors de l'enregistrement de la photo.");
+        console.error("Erreur lors de l'enregistrement des photos :", error);
+        alert("Une erreur est survenue lors de l'enregistrement des photos.");
       }
     };
 
-    // Handle file input selection
     const handleFileSelect = (event) => {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          photos.value.push(e.target.result); // Add the selected photo to the gallery
+          photos.value.push(e.target.result);
+          console.log("Photo ajoutée depuis la galerie :", photos.value.length);
         };
         reader.readAsDataURL(file);
       }
     };
 
-    // Trigger file input
     const triggerFileInput = () => {
       const fileInput = document.querySelector('input[type="file"]');
-      fileInput.click(); // Trigger the file input click event
+      fileInput.click();
     };
 
-    return { photos, openCamera, capturePhoto, removePhoto, savePhoto, isCameraOpen, handleFileSelect, triggerFileInput };
+    return {
+      photos,
+      openCamera,
+      capturePhoto,
+      removePhoto,
+      savePhotos,
+      isCameraOpen,
+      handleFileSelect,
+      triggerFileInput,
+    };
   },
 };
 </script>
@@ -152,6 +160,7 @@ export default {
   border-radius: 10px;
   margin-top: 3vh;
 }
+
 .text {
   font-size: 3.5vh;
   margin: 5vh 0;
@@ -166,7 +175,8 @@ export default {
   margin: 5vh auto 0;
   gap: 20px;
 }
-.video{
+
+.video {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   width: 80vw;
@@ -229,7 +239,7 @@ export default {
 }
 
 .validate-button {
-  background-color: #2E7D32;
+  background-color: #2e7d32;
   color: #fff;
   padding: 0.75rem;
   border: none;
