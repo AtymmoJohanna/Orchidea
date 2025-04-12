@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/especeOrchidees")
@@ -18,11 +19,17 @@ public class EspeceOrchideeController {
     private final EspeceOrchideeService especeOrchideeService;
 
     @GetMapping
-    public ResponseEntity<List<EspeceOrchidee>> getAllEspecesOrchidee() {
+    public ResponseEntity<List<EspeceOrchideeDTO>> getAllEspecesOrchidee() {
         List<EspeceOrchidee> especes = especeOrchideeService.getAllEspecesOrchidee();
-
-
-        return ResponseEntity.ok(especes);
+        // Mapping manuel de chaque entité en DTO
+        List<EspeceOrchideeDTO> dtoList = especes.stream()
+                .map(entity -> {
+                    EspeceOrchideeDTO dto = new EspeceOrchideeDTO();
+                    dto.setCode(entity.getCode());
+                    dto.setNomScientifique(entity.getNomScientifique());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
-
 }

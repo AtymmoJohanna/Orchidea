@@ -23,7 +23,7 @@
         <div v-if="auteur" class="additional-info">
           <p><strong>Auteur :</strong> {{ auteur.nom }} {{ auteur.prenom }}</p>
         </div>
-<!--        <p><strong>ID:</strong> {{ orchidee.id }}</p>-->
+        <!--        <p><strong>ID:</strong> {{ orchidee.id }}</p>-->
         <p><strong>Commentaire:</strong> {{ orchidee.commentaire }}</p>
         <p><strong>État de l'inflorescence:</strong> {{ orchidee.etat }}</p>
         <p><strong>Variabilité du taxon:</strong> {{ orchidee.varTaxon }}</p>
