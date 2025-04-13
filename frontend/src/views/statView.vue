@@ -1,9 +1,9 @@
 <template>
   <div class="stat-view-container">
-    <MapsComponent class="stat-component maps-component"/>
-    <StatComponent class="stat-component"/>
+    <MapsComponent class=" maps-component"/>
+
     <PieComponent class="stat-component"/>
-    <CouleurStat class="stat-component"/>
+    <EtatStat class="stat-component"/>
     <TaxonStat class="stat-component"/>
     <MotifStat class="stat-component"/>
     <IndividuStat class="stat-component"/>
@@ -16,7 +16,7 @@
 import MapsComponent from "@/components/MapsComponent.vue";
 import FooterVue from "@/components/FooterVue.vue";
 import PieComponent from '@/components/PieComponent.vue';
-import CouleurStat from "@/components/CouleurStat.vue";
+import EtatStat from "@/components/EtatStat.vue";
 import TaxonStat from "@/components/TaxonStat.vue";
 import MotifStat from "@/components/MotifStat.vue";
 import IndividuStat from "@/components/IndividuStat.vue";
@@ -28,7 +28,7 @@ export default {
     IndividuStat,
     MotifStat,
     TaxonStat,
-    CouleurStat,
+    EtatStat,
     MapsComponent,
     PieComponent,
     FooterVue,
@@ -49,9 +49,9 @@ export default {
 }
 
 .stat-component {
-  flex: 0 0 calc(50% - 20px); /* 50% de la largeur moins les marges pour 2 par ligne */
+
   margin: 10px;
-  min-height: 400px;
+  min-height: 200px;
   box-sizing: border-box;
   background-color: #ffffff;
   border-radius: 8px;
@@ -59,9 +59,14 @@ export default {
 }
 
 /* Règle spécifique pour MapsComponent */
-.stat-component.maps-component {
-  flex: 0 0 calc(100% - 20px); /* Prend toute la largeur moins les marges */
-  min-height: 400px; /* Même hauteur que les autres pour cohérence */
+.maps-component {
+  flex: 0 0 calc(100% - 20px);
+  margin: 10px;
+  height: 60vh;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* S'assurer que le footer prend toute la largeur et reste en bas */

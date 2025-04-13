@@ -78,8 +78,11 @@ onMounted(fetchOrchidees);
 
 <style scoped>
 .map-container {
-  width: 80%;
-  height: 700px;
-  margin: 20px;
+  width: 100%;
+  height: 50vh;
+  padding: 1rem;
+  box-sizing: border-box;
 }
+
+
 </style>

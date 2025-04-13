@@ -147,10 +147,13 @@ onMounted(fetchOrchidees);
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   width: 100%;
   max-width: 800px;
-  margin: 0 auto;
+  margin: 20px 0;
+}
+.stat-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .error-message {

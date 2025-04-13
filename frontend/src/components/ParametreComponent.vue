@@ -1,12 +1,10 @@
 <template>
   <div class="profile-container">
     <header class="profile-header">
-      <h1> {{ userName }}</h1>
-
+      <h1>{{ userName }}</h1>
     </header>
 
     <section class="permissions">
-
       <h2>Autorisations</h2>
       <div v-for="permission in permissions" :key="permission.name" class="permission-item">
         <input type="checkbox" v-model="permission.granted" />
@@ -17,22 +15,17 @@
     <section class="app-info">
       <h2>Version</h2>
       <div class="version-info">
-        <div class="point-icon">
-          <img src="@/assets/icons/points.png" alt="Point icon" />
-        </div>
-        <div class="text">{{ version }}</div>
+        <img class="icon" src="@/assets/icons/points.png" alt="Point icon" />
+        <span class="text">{{ version }}</span>
       </div>
-
       <div class="version-info">
-        <div class="logo-icon">
-          <img src="@/assets/icons/logo.png" alt="Logo icon" />
-        </div>
-        <div class="text">{{ appName }}</div>
+        <img class="icon-orche" src="@/assets/icons/logo.png" alt="Logo icon" />
+        <span class="text">{{ appName }}</span>
       </div>
     </section>
 
     <section class="support">
-      <h2>Soutenez nous</h2>
+      <h2>Soutenez-nous</h2>
       <a href="#evaluation">{{ supportText }}</a>
     </section>
   </div>
@@ -42,8 +35,7 @@
 export default {
   data() {
     return {
-      userName: "",  // Initialisation vide
-      profileImage: "",
+      userName: "",
       permissions: [
         { name: "localisation", label: "Localisation", granted: false },
         { name: "camera", label: "Caméra", granted: false },
@@ -55,13 +47,12 @@ export default {
     };
   },
   created() {
-    const user = JSON.parse(localStorage.getItem("user")); // Récupérer l'utilisateur
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      this.userName = user.nom; // Assure-toi que `nom` est la bonne propriété de ton objet utilisateur
+      this.userName = user.nom;
     }
   },
 };
-
 </script>
 
 <style scoped>
@@ -75,15 +66,15 @@ export default {
 
 .profile-header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
 .profile-header h1 {
-  margin-bottom: 10px;
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: bold;
 }
-
 
 .permissions,
 .app-info,
@@ -106,94 +97,31 @@ export default {
 }
 
 .version-info {
-  display: grid;
-  grid-template-columns: 20% 1px 80%; /* First column takes 20%, 1px gap, second column takes 80% */
-  align-items: center;
-  gap: 1px;
-  justify-content: center; /* Align items to the left */
-}
-
-.point-icon,
-.logo-icon {
   display: flex;
   align-items: center;
-  justify-content: center;
-
+  margin-bottom: 10px;
 }
 
-.point-icon img {
-  width: 2vh; /* Set width to 2vh */
-  height: 4vh; /* Set height to 4vh */
+.icon {
+  width: 7px;
+  height: 25px;
+  margin-right: 10px;
 }
-
+.icon-orche {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
 .text {
-  font-size: 2vh;
-  margin: 2vh 0;
-  text-align: left; /* Align text to the left */
+  font-size: 1rem;
   font-weight: bold;
+  text-align: left;
 }
 
-.app-info img,
 .support a {
-  display: block;
-  margin: 10px auto;
-}
-
-/* Responsive Design for mobile devices */
-@media (max-width: 768px) {
-  .profile-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .profile-header h1 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-  }
-
-  .profile-image img {
-    width: 100px;
-    height: 100px;
-  }
-
-  .permission-item {
-    font-size: 1.1em;
-  }
-
-  .permissions,
-  .app-info,
-  .support {
-    padding: 15px;
-    margin: 10px 0;
-  }
-
-  .app-info img {
-    width: 50px;
-    height: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-container {
-    padding: 10px;
-  }
-
-  .permissions,
-  .app-info,
-  .support {
-    padding: 10px;
-  }
-
-  .profile-image img {
-    width: 80px;
-    height: 80px;
-  }
-
-  .app-info img,
-  .support a {
-    width: 1vh;
-    height: 3vh;
-  }
+  display: inline-block;
+  margin-top: 10px;
+  color: #33691e;
+  text-decoration: underline;
 }
 </style>
