@@ -4,12 +4,14 @@
 
     <!-- Loading State -->
     <div v-if="isPhotoLoading" class="loading-state">
-      <p>Chargement de la photo...</p>
+      <p>Chargement des photos...</p>
     </div>
 
-    <!-- Display Image -->
-    <div v-else-if="photos && photos.url" class="image-container">
-      <img :src="photos.url" alt="Image Base64" class="image" />
+    <!-- Display All Images -->
+    <div v-else-if="photos.length > 0" class="image-container">
+      <div v-for="(photo, index) in photos" :key="index" class="image-card">
+        <img :src="photo.url" alt="Image Base64" class="image" />
+      </div>
     </div>
 
     <!-- Orchidée Information -->
@@ -23,7 +25,6 @@
         <div v-if="auteur" class="additional-info">
           <p><strong>Auteur :</strong> {{ auteur.nom }} {{ auteur.prenom }}</p>
         </div>
-        <!--        <p><strong>ID:</strong> {{ orchidee.id }}</p>-->
         <p><strong>Commentaire:</strong> {{ orchidee.commentaire }}</p>
         <p><strong>État de l'inflorescence:</strong> {{ orchidee.etat }}</p>
         <p><strong>Variabilité du taxon:</strong> {{ orchidee.varTaxon }}</p>
@@ -35,8 +36,6 @@
         <p><strong>Longitude:</strong> {{ orchidee.longitude }}</p>
         <p><strong>Date d'enregistrement:</strong> {{ orchidee.dateEnreg }}</p>
       </div>
-
-
     </div>
   </div>
 </template>
@@ -47,19 +46,19 @@ import axios from "axios";
 
 export default {
   setup() {
-    const photos = ref(null);
+    const photos = ref([]);
     const orchidee = ref(null);
     const espece = ref(null);
     const auteur = ref(null);
     const isPhotoLoading = ref(true);
 
-    const getPhoto = async (id) => {
+    const getAllPhotos = async () => {
       isPhotoLoading.value = true;
       try {
-        const response = await axios.get(`api/photos/${id}`);
-        photos.value = response.data;
+        const response = await axios.get("api/photos");
+        photos.value = response.data._embedded?.photos || response.data;
       } catch (error) {
-        console.error("Erreur lors de la récupération de la photo :", error);
+        console.error("Erreur lors de la récupération des photos :", error);
       } finally {
         isPhotoLoading.value = false;
       }
@@ -87,8 +86,7 @@ export default {
       try {
         const responseOrchidee = await axios.get("api/orchidees/1");
         orchidee.value = responseOrchidee.data;
-        console.log(orchidee.value);
-        // Récupération des liens vers l'auteur et l'espèce
+
         const especeUrl = orchidee.value._links?.espece?.href;
         const auteurUrl = orchidee.value._links?.auteur?.href;
 
@@ -98,9 +96,10 @@ export default {
         console.error("Erreur lors de la récupération des données :", error);
       }
     };
+
     onMounted(() => {
+      getAllPhotos();
       fetchPhotosAndOrchidee();
-      getPhoto(1);
     });
 
     return {
@@ -115,7 +114,6 @@ export default {
 </script>
 
 <style scoped>
-/* General Styling */
 .gallery-container {
   font-family: 'Arial', sans-serif;
   padding: 2rem;
@@ -131,7 +129,6 @@ export default {
   margin-bottom: 1.5rem;
 }
 
-/* Loading State */
 .loading-state {
   text-align: center;
   font-size: 1.2rem;
@@ -143,21 +140,26 @@ export default {
   margin-bottom: 2rem;
 }
 
-/* Image Section */
 .image-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
+.image-card {
+  max-width: 300px;
+  flex: 1 1 300px;
+}
+
 .image {
-  max-width: 100%;
+  width: 100%;
   height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Orchidée Information */
 .orchidee-info {
   background-color: #fff;
   padding: 1.5rem;
@@ -171,7 +173,6 @@ export default {
   margin-bottom: 1rem;
 }
 
-/* Information Grid */
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -179,18 +180,12 @@ export default {
   margin-bottom: 1.5rem;
 }
 
-.info-grid p {
-  font-size: 1rem;
-  color: #555;
-}
-
+.info-grid p,
 .additional-info {
-  margin-top: 1rem;
   font-size: 1rem;
   color: #555;
 }
 
-/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .info-grid {
     grid-template-columns: 1fr;

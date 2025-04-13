@@ -1,8 +1,13 @@
 <template>
   <div class="stat-view-container">
-    <MapsComponent class="stat-component"/>
+    <MapsComponent class="stat-component maps-component"/>
     <StatComponent class="stat-component"/>
-    <PieComponent class="stat-component"/><!-- MapsVue fait partie de StatView -->
+    <PieComponent class="stat-component"/>
+    <CouleurStat class="stat-component"/>
+    <TaxonStat class="stat-component"/>
+    <MotifStat class="stat-component"/>
+    <IndividuStat class="stat-component"/>
+    <FormStat class="stat-component"/>
     <FooterVue />
   </div>
 </template>
@@ -10,14 +15,21 @@
 <script>
 import MapsComponent from "@/components/MapsComponent.vue";
 import FooterVue from "@/components/FooterVue.vue";
-import StatComponent from '@/components/StatComponent.vue';
-import PieComponent from '@/components/PieComponent.vue'
+import PieComponent from '@/components/PieComponent.vue';
+import CouleurStat from "@/components/CouleurStat.vue";
+import TaxonStat from "@/components/TaxonStat.vue";
+import MotifStat from "@/components/MotifStat.vue";
+import IndividuStat from "@/components/IndividuStat.vue";
+import FormStat from "@/components/FormStat.vue";
 
 export default {
   components: {
-
+    FormStat,
+    IndividuStat,
+    MotifStat,
+    TaxonStat,
+    CouleurStat,
     MapsComponent,
-    StatComponent,
     PieComponent,
     FooterVue,
   },
@@ -27,15 +39,41 @@ export default {
 <style scoped>
 .stat-view-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   min-height: 100vh;
-  background-color: #dcead2; /* Set background color */
+  background-color: #dcead2;
   position: relative;
+  justify-content: space-between;
+  padding: 10px;
 }
 
 .stat-component {
-  flex: 1; /* Make CameraComponent take all available space */
+  flex: 0 0 calc(50% - 20px); /* 50% de la largeur moins les marges pour 2 par ligne */
+  margin: 10px;
+  min-height: 400px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Règle spécifique pour MapsComponent */
+.stat-component.maps-component {
+  flex: 0 0 calc(100% - 20px); /* Prend toute la largeur moins les marges */
+  min-height: 400px; /* Même hauteur que les autres pour cohérence */
+}
 
+/* S'assurer que le footer prend toute la largeur et reste en bas */
+.stat-view-container > :last-child {
+  flex: 0 0 100%;
+  margin: 0;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 768px) {
+  .stat-component {
+    flex: 0 0 calc(100% - 20px); /* 1 par ligne sur petits écrans */
+  }
+}
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <div class="pie-container">
-    <h2>Pourcentage des orchidées par couleur</h2>
+  <div class="stat-container">
+    <h2>Statistiques des orchidées par forme</h2>
     <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     <div>
       <apexchart width="100%" :options="options" :series="series"></apexchart>
@@ -13,44 +13,63 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 import apexchart from "vue3-apexcharts";
 
-// Variables réactives pour les données du graphique
 const series = ref([]);
 const options = ref({
   chart: {
-    type: "pie",
+    type: "bar",
     height: 400,
   },
-  labels: [],
-  colors: [], // Sera mis à jour dynamiquement
-  responsive: [
-    {
-      breakpoint: 480,
-      options: {
-        chart: {
-          width: 300,
-        },
-        legend: {
-          position: "bottom",
-        },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: "55%",
+    },
+  },
+  xaxis: {
+    categories: [],
+    title: {
+      text: "Forme",
+      style: {
+        fontSize: "14px",
+        fontWeight: "bold",
       },
     },
-  ],
+    labels: {
+      rotate: -45,
+      style: {
+        fontSize: "12px",
+      },
+    },
+  },
+  yaxis: {
+    title: {
+      text: "Nombre d'orchidées",
+      style: {
+        fontSize: "14px",
+        fontWeight: "bold",
+      },
+    },
+    labels: {
+      style: {
+        fontSize: "12px",
+      },
+    },
+  },
   dataLabels: {
     enabled: true,
-    formatter: (val) => `${val.toFixed(1)}%`,
+    style: {
+      fontSize: "12px",
+      colors: ["#000"],
+    },
+  },
+  colors: ["#28a745"],
+  fill: {
+    opacity: 0.8,
   },
   tooltip: {
     y: {
-      formatter: (val, { series, seriesIndex, dataPointIndex, w }) => {
-        const total = series.reduce((a, b) => a + b, 0);
-        const percentage = (val / total) * 100;
-        return `${percentage.toFixed(1)}% (${val} orchidée${val > 1 ? "s" : ""})`;
-      },
+      formatter: (val) => `${val} orchidée${val > 1 ? "s" : ""}`,
     },
-  },
-  legend: {
-    position: "right",
-    fontSize: "14px",
   },
 });
 
@@ -74,45 +93,37 @@ const fetchOrchidees = async () => {
       return;
     }
 
-    // Comptage par couleur (chaque orchidée peut avoir plusieurs couleurs)
-    const countByColor = orchidées.value.reduce((acc, orchidee) => {
-      const colors = orchidee.couleur || ["Inconnu"];
-      colors.forEach((color) => {
-        acc[color] = (acc[color] || 0) + 1;
-      });
+    // Comptage par forme
+    const countByForme = orchidées.value.reduce((acc, orchidee) => {
+      const forme = orchidee.forme || "Inconnu"; // Gérer les formes null/undefined
+      acc[forme] = (acc[forme] || 0) + 1;
       return acc;
     }, {});
 
-    console.log("Comptage par couleur : ", countByColor);
+    console.log("Comptage par forme : ", countByForme);
 
-    // Mettre à jour les séries et les labels
-    const colors = Object.keys(countByColor);
-    const counts = Object.values(countByColor);
+    // Mettre à jour les séries et les catégories
+    const formes = Object.keys(countByForme); // Formes pour l'axe X
+    const counts = Object.values(countByForme); // Nombres pour l'axe Y
 
-    console.log("Couleurs (labels) : ", colors);
-    console.log("Comptages (séries) : ", counts);
-
-    // Définir des couleurs spécifiques pour chaque label
-    const colorMap = {
-      Noir: "#000000",
-      Vert: "#28a745",
-      Rouge: "#ff0000",
-      Jaune: "#ffff00",
-      Rose: "#ff69b4",
-      Violet: "#800080",
-      Pourpre: "#4b0082",
-      Inconnu: "#808080",
-    };
-    const chartColors = colors.map((color) => colorMap[color] || "#000000");
+    console.log("Formes (axe X) : ", formes);
+    console.log("Comptages (axe Y) : ", counts);
 
     // Mettre à jour les données du graphique
-    series.value = counts;
+    series.value = [
+      {
+        name: "Nombre d'Orchidées",
+        data: counts,
+      },
+    ];
 
-    // Mettre à jour les options de manière réactive
+    // Mettre à jour les catégories de l'axe X de manière réactive
     options.value = {
       ...options.value,
-      labels: colors,
-      colors: chartColors,
+      xaxis: {
+        ...options.value.xaxis,
+        categories: formes,
+      },
     };
   } catch (error) {
     console.error("Erreur lors de la récupération des orchidées :", error);
@@ -126,7 +137,7 @@ onMounted(fetchOrchidees);
 </script>
 
 <style scoped>
-.pie-container {
+.stat-container {
   position: relative;
   padding-bottom: 60px;
   background-color: #dcead2;
