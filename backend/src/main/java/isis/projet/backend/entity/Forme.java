@@ -1,5 +1,5 @@
 package isis.projet.backend.entity;
 
 public enum Forme {
-    Etoile, Capuchon, Epi, Grappe
+    Epi, grappe, isolée, Etoile, ophrys, langue, spirale, sabot
 }
