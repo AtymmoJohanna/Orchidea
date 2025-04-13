@@ -48,7 +48,8 @@
 
         <!-- ✅ Autres infos -->
         <div class="info-grid">
-          <p><strong>Commentaire:</strong> {{ orchidee.commentaire }}</p>
+
+          <p><strong>Motifs:</strong> {{ orchidee.motif?.join(', ') }}</p>
           <p><strong>État:</strong> {{ orchidee.etat }}</p>
           <p><strong>Var. Taxon:</strong> {{ orchidee.varTaxon }}</p>
           <p><strong>Nombre individus:</strong> {{ orchidee.nbreIndividu }}</p>
@@ -56,7 +57,7 @@
           <p><strong>Couleurs:</strong> {{ orchidee.couleur?.join(', ') }}</p>
           <p><strong>Longitude:</strong> {{ orchidee.longitude }}</p>
           <p><strong>Latitude:</strong> {{ orchidee.latitude }}</p>
-          <p><strong>Motifs:</strong> {{ orchidee.motif?.join(', ') }}</p>
+          <p><strong>Commentaire:</strong> {{ orchidee.commentaire }}</p>
           <p><strong>Date:</strong> {{ orchidee.dateEnreg }}</p>
           <p><strong>Auteur :</strong> {{ orchidee.auteur?.prenom }} {{ orchidee.auteur?.nom }}</p>
         </div>
