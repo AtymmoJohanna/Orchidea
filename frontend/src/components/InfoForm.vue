@@ -23,11 +23,11 @@
       <form @submit.prevent="soumettreFormulaire">
         <div class="expansion-panels">
           <details class="expansion-panel">
-            <summary>Nom de l'orchidée</summary>
+            <summary>Famille</summary>
             <div class="expansion-content">
-              <label>Nom de l'orchidée</label>
+              <label>Famille</label>
               <select v-model="userFormData.especeOrchidee" required>
-                <option value="" disabled>Choisissez une orchidée</option>
+                <option value="" disabled>Choisissez une Famille</option>
                 <option v-for="name in data.especesOrchidee" :key="name" :value="name">{{ name }}</option>
               </select>
             </div>
@@ -112,7 +112,7 @@
           </details>
 
           <details class="expansion-panel">
-            <summary>Commentaire</summary>
+            <summary>Espéce/Commentaire</summary>
             <div class="expansion-content">
               <label>
                 Notes d'observation
