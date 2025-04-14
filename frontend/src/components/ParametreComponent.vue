@@ -2,6 +2,7 @@
   <div class="profile-container">
     <header class="profile-header">
       <h1>{{ userName }}</h1>
+      <button @click="logout" class="logout-button">Déconnexion</button>
     </header>
 
     <section class="permissions">
@@ -52,6 +53,11 @@ export default {
       this.userName = user.nom;
     }
   },
+  methods: {
+    logout() {
+      this.$router.push("/inscrit");
+    },
+  },
 };
 </script>
 
@@ -66,14 +72,29 @@ export default {
 
 .profile-header {
   display: flex;
-  justify-content: center;
-  text-align: center;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .profile-header h1 {
   margin: 0;
   font-size: 1.8em;
   font-weight: bold;
+}
+
+.logout-button {
+  background-color: #c62828;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #b71c1c;
 }
 
 .permissions,
@@ -107,11 +128,13 @@ export default {
   height: 25px;
   margin-right: 10px;
 }
+
 .icon-orche {
   width: 20px;
   height: 20px;
   margin-right: 10px;
 }
+
 .text {
   font-size: 1rem;
   font-weight: bold;
