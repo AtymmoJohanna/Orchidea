@@ -1,4 +1,12 @@
 <template>
+  <div class="trust-section">
+    <h3 class="trust-title">Ils nous ont fait confiance</h3>
+    <div class="trust-logos">
+      <img src="@/assets/insa.png" alt="Logo 1" class="trust-logo" />
+      <img src="@/assets/inu-champollion.png" alt="Logo 2" class="trust-logo" />
+      <img src="@/assets/logo(1).png" alt="Logo 3" class="trust-logo" />
+    </div>
+  </div>
   <div class="gallery-container">
     <h2 class="title">Galerie d'Orchidées</h2>
 
@@ -232,4 +240,27 @@ export default {
     height: auto;
   }
 }
+.trust-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.trust-title {
+  font-size: 1.5rem;
+  color: black;
+  margin-bottom: 1rem;
+}
+
+.trust-logos {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.trust-logo {
+  height: 60px;
+  object-fit: contain;
+}
+
 </style>
